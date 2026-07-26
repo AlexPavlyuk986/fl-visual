@@ -24,12 +24,6 @@ function AttributeSelector({
 
         <div className="selection-panel">
 
-
-            <h3>
-                Choose datapoint identifier
-            </h3>
-
-
             {
                 columns.map((column) => (
 
@@ -58,28 +52,6 @@ function AttributeSelector({
 
 
             <br />
-
-
-            <button
-
-                disabled={!selectedAttribute}
-
-                className={
-                    selectedAttribute
-                    ?
-                    "active-button"
-                    :
-                    "inactive-button"
-                }
-
-                onClick={onNext}
-
-            >
-
-                Next
-
-            </button>
-
 
         </div>
 

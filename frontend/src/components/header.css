@@ -1,0 +1,317 @@
+/* ===========================
+   Header
+=========================== */
+
+.header {
+
+    height: 100px;
+
+    display: flex;
+
+    align-items: stretch;
+
+    background: #ffffff;
+
+    border-bottom: 1px solid #d9d9d9;
+
+    flex-shrink: 0;
+
+}
+
+
+
+/* ===========================
+   Header Sections
+=========================== */
+
+.header-section {
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    padding: 8px 16px;
+
+    width: fit-content;
+
+    flex-shrink: 0;
+
+    background: transparent;
+
+}
+
+
+
+.header-content {
+
+    flex: 1;
+
+    display: flex;
+
+    align-items: flex-start;
+
+    background: transparent;
+
+}
+
+
+
+/* ===========================
+   Data Buttons Layout
+=========================== */
+
+.data-buttons {
+
+    display: flex;
+
+    flex-direction: row;
+
+    align-items: flex-start;
+
+    gap: 8px;
+
+}
+
+
+
+/* ===========================
+   Section Title
+=========================== */
+
+.section-title {
+
+    text-align: center;
+
+    font-size: 13px;
+
+    color: #666666;
+
+    user-select: none;
+
+}
+
+
+
+/* ===========================
+   Divider
+=========================== */
+
+.header-divider {
+
+    width: 1px;
+
+    background: #d8d8d8;
+
+    margin-top: 8px;
+
+    margin-bottom: 8px;
+
+}
+
+
+
+/* ===========================
+   Common Header Button
+=========================== */
+
+.header-button {
+
+    width: 72px;
+
+    height: 72px;
+
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+
+    text-align: center;
+
+
+    border: none;
+
+    border-radius: 6px;
+
+
+    font-size: 13px;
+
+    font-weight: 500;
+
+    font-family: inherit;
+
+
+    cursor: pointer;
+
+    user-select: none;
+
+
+    transition:
+
+        background-color 0.2s,
+
+        transform 0.05s;
+
+}
+
+
+
+/* ===========================
+   Upload Button
+=========================== */
+
+.upload-button {
+
+    background: #2563eb;
+
+    color: white;
+
+}
+
+
+
+.upload-button:hover {
+
+    background: #1d4ed8;
+
+}
+
+
+
+.upload-button:active {
+
+    transform: scale(0.96);
+
+}
+
+
+
+/* ===========================
+   Add Node Button
+=========================== */
+
+.add-node-button {
+
+    background: #2563eb;
+
+    color: white;
+
+}
+
+
+
+.add-node-button:hover {
+
+    background: #1d4ed8;
+
+}
+
+
+
+.add-node-button:active {
+
+    transform: scale(0.96);
+
+}
+
+
+
+.add-node-button:disabled {
+
+    background: #bdbdbd;
+
+    color: #555555;
+
+    cursor: not-allowed;
+
+    transform: none;
+
+}
+
+
+
+/* ===========================
+   Delete Node Button
+=========================== */
+
+.delete-node-button {
+
+    background: #bdbdbd;
+
+    color: #555555;
+
+    cursor: not-allowed;
+
+}
+
+
+
+.delete-node-button.active {
+
+    background: #dc2626;
+
+    color: white;
+
+    cursor: pointer;
+
+}
+
+
+
+.delete-node-button.active:hover {
+
+    background: #b91c1c;
+
+}
+
+
+
+.delete-node-button.active:active {
+
+    transform: scale(0.96);
+
+}
+
+
+
+/* ===========================
+   Button Focus
+=========================== */
+
+.header-button:focus {
+
+    outline: none;
+
+}
+
+/* ===========================
+   Add Edge Button
+=========================== */
+
+.add-edge-button {
+
+    background: #2563eb;
+
+    color: white;
+
+}
+
+
+
+.add-edge-button:hover {
+
+    background: #1d4ed8;
+
+}
+
+
+
+.add-edge-button:active {
+
+    transform: scale(0.96);
+
+}

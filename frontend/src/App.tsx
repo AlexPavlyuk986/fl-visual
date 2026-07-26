@@ -3,8 +3,7 @@ import { useState } from "react";
 import Header from "./components/Header";
 import GraphArea from "./components/GraphArea";
 import Footer from "./components/Footer";
-import AttributeSelector from "./components/AttributeSelector";
-import LayoutSelector from "./components/LayoutSelector";
+import AddNodeModal from "./components/AddNodeModal";
 
 import { api } from "./services/api";
 
@@ -14,33 +13,45 @@ import type { NodeData } from "./types/graph";
 function App() {
 
 
-    const [uploaded, setUploaded] = useState(false);
+    const [uploaded, setUploaded] =
+        useState(false);
 
 
-    const [columns, setColumns] = useState<string[]>([]);
+
+    const [columns, setColumns] =
+        useState<string[]>([]);
+
 
 
     const [selectedAttribute, setSelectedAttribute] =
         useState("");
 
 
+
     const [selectedLayout, setSelectedLayout] =
         useState("");
+
 
 
     const [nodes, setNodes] =
         useState<NodeData[]>([]);
 
+
+
     const [selectedNode, setSelectedNode] =
         useState<NodeData | null>(null);
 
 
-    /*
-        Application steps:
 
+    const [showAddNode, setShowAddNode] =
+        useState(false);
+
+
+
+    /*
         0 - Waiting for CSV upload
-        1 - Choose node identifier
-        2 - Choose graph layout
+        1 - Select identifier
+        2 - Select layout
         3 - Display graph
     */
 
@@ -49,8 +60,12 @@ function App() {
 
 
 
+
+
+
+
     /*
-        Upload CSV file
+        Upload CSV
     */
 
     const uploadFile = async (
@@ -60,9 +75,11 @@ function App() {
 
         if (!file.name.endsWith(".csv")) {
 
+
             alert(
                 "Please upload CSV file."
             );
+
 
             return;
 
@@ -72,6 +89,7 @@ function App() {
 
         const formData =
             new FormData();
+
 
 
         formData.append(
@@ -92,17 +110,17 @@ function App() {
 
 
 
-            if (
-                response.data.success
-            ) {
+            if (response.data.success) {
 
 
                 setUploaded(true);
 
 
+
                 setColumns(
                     response.data.columns
                 );
+
 
 
                 setStep(1);
@@ -118,7 +136,6 @@ function App() {
                 );
 
             }
-
 
 
         }
@@ -140,6 +157,11 @@ function App() {
 
 
 
+
+
+
+
+
     /*
         Create NetworkX graph
     */
@@ -158,10 +180,12 @@ function App() {
                     null,
 
                     {
+
                         params: {
 
                             identifier:
                                 selectedAttribute,
+
 
                             layout:
                                 selectedLayout
@@ -174,14 +198,15 @@ function App() {
 
 
 
-            if (
-                response.data.success
-            ) {
+            if (response.data.success) {
 
 
                 setNodes(
+
                     response.data.nodes
+
                 );
+
 
 
                 setStep(3);
@@ -218,25 +243,279 @@ function App() {
     };
 
 
+    /*
+        Save manually dragged node position
+    */
+
+    const updateNodePosition = (
+
+        id: string,
+
+        position: {
+
+            x: number;
+
+            y: number;
+
+        }
+
+    ) => {
+
+
+        setNodes(
+
+            previous =>
+
+                previous.map(node =>
+
+
+                    node.id === id
+
+                    ?
+
+                    {
+
+                        ...node,
+
+                        position
+
+                    }
+
+                    :
+
+                    node
+
+
+                )
+
+        );
+
+
+    };
+
+
+    /*
+        Delete the selected node
+    */
+
+    const deleteNode = async () => {
+
+
+        if (!selectedNode) {
+
+            return;
+
+        }
+
+
+
+        try {
+
+
+            await api.delete(
+                "/delete_node",
+                {
+
+                    params: {
+
+                        node_id:
+                            selectedNode.id
+
+                    }
+
+                }
+
+            );
+
+
+
+            setNodes(
+                previous =>
+                    previous.filter(
+                        node =>
+                            node.id !== selectedNode.id
+                    )
+            );
+
+
+
+            setSelectedNode(null);
+
+
+        }
+
+        catch(error) {
+
+            console.error(error);
+
+            alert(
+                "Node deletion failed"
+            );
+
+        }
+
+    };
+
+
+    /*
+        Add new node from AddNodeModal
+
+        Modal returns:
+
+        {
+            attribute1: value1,
+            attribute2: value2
+        }
+
+        Convert it to NodeData.
+    */
+
+    const addNode = (
+
+        data: Record<string, string>
+
+    ): boolean => {
+
+        const nodeId =
+            data[selectedAttribute];
+
+        const exists =
+            nodes.some(
+                node =>
+                    node.id === nodeId
+            );
+
+        if (exists) {
+            return false;
+        }
+
+        const newNode: NodeData = {
+
+
+            id:
+
+                data[selectedAttribute],
+
+
+
+            attributes:
+
+                [data],
+
+
+
+            position: {
+
+
+                x: 250,
+
+
+                y: 250
+
+
+            }
+
+
+        };
+
+
+
+
+        setNodes(
+
+            previous => [
+
+                ...previous,
+
+                newNode
+
+            ]
+
+        );
+
+        // close modal only after successful creation
+        setShowAddNode(false);
+
+        return true;
+
+
+    };
+
+
+
+
+
+
+
+
 
     return (
+
 
         <div className="app-container">
 
 
+
+
+
             <Header
-                onUpload={uploadFile}
+
+
+                onUpload={
+                    uploadFile
+                }
+
+
+
+                uploaded={
+                    uploaded
+                }
+
+
+
+                onAddNode={() =>
+                    setShowAddNode(true)
+                }
+
+                onDeleteNode={deleteNode}
+
+
+                deleteEnabled={
+                    selectedNode !== null
+                }
+
             />
+
+
+
+
+
+
 
 
             <GraphArea
 
-                step={step}
-
-                uploaded={uploaded}
 
 
-                columns={columns}
+                step={
+                    step
+                }
+
+
+
+                uploaded={
+                    uploaded
+                }
+
+
+
+
+                columns={
+                    columns
+                }
+
+
+
 
 
                 selectedAttribute={
@@ -244,9 +523,16 @@ function App() {
                 }
 
 
+
+
+
                 setSelectedAttribute={
                     setSelectedAttribute
                 }
+
+
+
+
 
 
                 selectedLayout={
@@ -254,9 +540,15 @@ function App() {
                 }
 
 
+
+
+
                 setSelectedLayout={
                     setSelectedLayout
                 }
+
+
+
 
 
                 onNext={() =>
@@ -264,26 +556,107 @@ function App() {
                 }
 
 
+
+
+
                 onApply={
                     createGraph
                 }
 
 
-                nodes={nodes}
 
 
-                selectedNode={selectedNode}
+
+                nodes={
+                    nodes
+                }
 
 
-                setSelectedNode={setSelectedNode}
+
+
+
+                selectedNode={
+                    selectedNode
+                }
+
+
+
+
+
+                setSelectedNode={
+                    setSelectedNode
+                }
+
+
+
+
+
+                updateNodePosition={
+                    updateNodePosition
+                }
+
+
 
             />
+
+
+
+
+
+
+
 
 
             <Footer />
 
 
+
+
+
+
+
+
+            {
+                showAddNode && (
+
+
+                    <AddNodeModal
+
+
+                        columns={
+                            columns
+                        }
+
+
+                         identifier={
+                            selectedAttribute
+                        }
+
+
+                        onAdd={
+                            addNode
+                        }
+
+
+                        onClose={() =>
+                            setShowAddNode(false)
+                        }
+
+
+
+                    />
+
+
+                )
+
+            }
+
+
+
+
+
         </div>
+
 
     );
 

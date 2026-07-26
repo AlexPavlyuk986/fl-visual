@@ -1,34 +1,53 @@
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
+
 import pandas as pd
 import os
-from data_store import uploaded_dataframe
+
 import data_store
-from graph import create_graph
+
+from graph import create_graph, add_node, get_nodes, delete_node
 
 
 app = FastAPI()
 
 
+
 app.add_middleware(
     CORSMiddleware,
+
     allow_origins=[
         "http://localhost:5173"
     ],
+
     allow_credentials=True,
+
     allow_methods=["*"],
+
     allow_headers=["*"],
 )
+
 
 
 UPLOAD_DIR = "uploads"
 
 
+os.makedirs(
+    UPLOAD_DIR,
+    exist_ok=True
+)
+
+
+
 @app.get("/")
 def root():
+
     return {
         "message": "Backend is working!"
     }
+
+
+
 
 
 @app.post("/upload")
@@ -36,12 +55,21 @@ async def upload_csv(
     file: UploadFile = File(...)
 ):
 
+
     # Check extension
+
     if not file.filename.endswith(".csv"):
+
         return {
+
             "success": False,
-            "message": "Only CSV files are allowed"
+
+            "message":
+                "Only CSV files are allowed"
+
         }
+
+
 
 
     filepath = os.path.join(
@@ -50,90 +78,234 @@ async def upload_csv(
     )
 
 
-    # Save file
+
     contents = await file.read()
 
+
+
     with open(filepath, "wb") as f:
+
         f.write(contents)
 
 
-    # Read CSV
+
+
+
     try:
+
         df = pd.read_csv(filepath)
+
+
         data_store.uploaded_dataframe = df
 
+
     except Exception as e:
+
+
         return {
+
             "success": False,
-            "message": f"CSV error: {str(e)}"
+
+            "message":
+                f"CSV error: {str(e)}"
+
         }
 
 
-    # Basic validation
+
+
+
     if df.empty:
+
         return {
+
             "success": False,
-            "message": "CSV file is empty"
+
+            "message":
+                "CSV file is empty"
+
         }
+
+
+
 
 
     print(df.head())
 
 
+
+
+
     return {
+
         "success": True,
-        "message": "CSV uploaded successfully",
-        "rows": len(df),
-        "columns": list(df.columns)
+
+        "message":
+            "CSV uploaded successfully",
+
+        "rows":
+            len(df),
+
+        "columns":
+            list(df.columns)
+
     }
+
+
+
+
+
+
 
 @app.post("/create_graph")
 def create_graph_endpoint(
-    identifier:str,
-    layout:str
+
+    identifier: str,
+
+    layout: str
+
 ):
 
 
     df = data_store.uploaded_dataframe
 
 
+
+
     if df is None:
 
+
         return {
-            "success":False,
-            "message":"No data uploaded"
+
+            "success": False,
+
+            "message":
+                "No data uploaded"
+
         }
 
 
-    G = create_graph(
-        df,
-        identifier,
-        layout
-    )
 
 
-    nodes=[]
+
+    try:
 
 
-    for node,data in G.nodes(data=True):
+        create_graph(
 
-        nodes.append({
+            df,
 
-            "id":node,
+            identifier,
 
-            "position":
-                data["position"].tolist(),
+            layout
 
-            "data":
-                data["data"]
+        )
 
-        })
+
+
+        return {
+
+
+            "success": True,
+
+
+            "nodes":
+                get_nodes()
+
+
+        }
+
+
+
+    except Exception as e:
+
+
+        return {
+
+
+            "success": False,
+
+
+            "message":
+                str(e)
+
+        }
+
+
+
+
+
+
+
+
+@app.post("/add_node")
+async def add_new_node(
+    data: dict
+):
+
+
+    try:
+
+
+        node_id = data["id"]
+
+
+        attributes = data["attributes"]
+
+
+
+
+        add_node(
+
+            node_id,
+
+            attributes
+
+        )
+
+
+
+        return {
+
+
+            "success": True,
+
+
+            "nodes":
+                get_nodes()
+
+
+        }
+
+
+
+
+    except Exception as e:
+
+
+        return {
+
+
+            "success": False,
+
+
+            "message":
+                str(e)
+
+        }
+
+@app.delete("/delete_node")
+def delete_node_endpoint(
+    node_id: str
+):
+
+    delete_node(node_id)
 
 
     return {
 
-        "success":True,
+        "success": True,
 
-        "nodes":nodes
+        "node_id": node_id
 
     }

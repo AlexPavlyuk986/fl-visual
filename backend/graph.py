@@ -1,65 +1,199 @@
 import networkx as nx
 
 
-
-def create_graph(
-        df,
-        identifier,
-        layout
-):
-
-
-    G = nx.Graph()
+G = nx.Graph()
 
 
 
+def create_graph(df, identifier, layout):
+
+    global G
+
+
+    # Remove previous graph
+    G.clear()
+
+
+
+    # Create nodes
     grouped = df.groupby(identifier)
 
 
+    for value, group in grouped:
 
-    for node_id, group in grouped:
 
         attributes = (
             group
-            .to_dict("records")
+            .to_dict(orient="records")
         )
 
 
         G.add_node(
-            str(node_id),
-            data=group.drop(columns=[identifier])
-                .iloc[0]
-                .to_dict()
+
+            str(value),
+
+            attributes=attributes
+
         )
 
 
 
-    if layout=="Random Layout":
+    # Apply selected layout
 
-        positions = nx.random_layout(G)
+    if layout == "Random Layout":
 
-
-    elif layout=="Spring Layout":
-
-        positions = nx.spring_layout(G)
+        pos = nx.random_layout(G)
 
 
-    elif layout=="Circular Layout":
+    elif layout == "Spring Layout":
 
-        positions = nx.circular_layout(G)
+        pos = nx.spring_layout(G)
+
+
+    elif layout == "Circular Layout":
+
+        pos = nx.circular_layout(G)
 
 
     else:
 
-        positions = nx.spring_layout(G)
+        # default
+        pos = nx.spring_layout(G)
 
 
 
-    nx.set_node_attributes(
-        G,
-        positions,
-        "position"
-    )
+
+    # Store coordinates in nodes
+
+    for node, coords in pos.items():
+
+
+        G.nodes[node]["position"] = {
+
+
+            "x": float(coords[0]) * 500,
+
+
+            "y": float(coords[1]) * 500
+
+
+        }
+
 
 
     return G
+
+
+
+
+
+
+
+def add_node(node_id, attributes):
+
+    global G
+
+
+
+    G.add_node(
+
+        str(node_id),
+
+        attributes=attributes
+
+    )
+
+
+
+    # Recalculate positions after adding node
+
+    pos = nx.spring_layout(G)
+
+
+
+    for node, coords in pos.items():
+
+
+        G.nodes[node]["position"] = {
+
+
+            "x": float(coords[0]),
+
+
+            "y": float(coords[1])
+
+
+        }
+
+
+
+    return G
+
+
+
+def delete_node(node_id):
+
+    global G
+
+
+    if G.has_node(str(node_id)):
+
+        G.remove_node(str(node_id))
+
+
+    return G
+
+
+
+def get_nodes():
+
+
+    nodes = []
+
+
+
+    for node_id, data in G.nodes(data=True):
+
+
+        nodes.append({
+
+
+            "id": str(node_id),
+
+
+
+            "attributes":
+
+                data.get(
+
+                    "attributes",
+
+                    {}
+
+                ),
+
+
+
+            "position":
+
+                data.get(
+
+                    "position",
+
+                    {
+
+                        "x": 0,
+
+                        "y": 0
+
+                    }
+
+                )
+
+
+
+        })
+
+
+
+    return nodes

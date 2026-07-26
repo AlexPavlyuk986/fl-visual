@@ -1,5 +1,6 @@
-import CytoscapeComponent from "react-cytoscapejs";
+import { useMemo } from "react";
 
+import CytoscapeComponent from "react-cytoscapejs";
 import type { EventObject } from "cytoscape";
 
 import AttributeSelector from "./AttributeSelector";
@@ -8,10 +9,15 @@ import NodePopup from "./NodePopup";
 
 import type { NodeData } from "../types/graph";
 
+import "./GraphArea.css";
+
+
 
 interface GraphAreaProps {
 
+
     step: number;
+
 
     uploaded: boolean;
 
@@ -19,21 +25,27 @@ interface GraphAreaProps {
     columns: string[];
 
 
+
     selectedAttribute: string;
 
     setSelectedAttribute:
-        (value: string) => void;
+        React.Dispatch<
+            React.SetStateAction<string>
+        >;
 
 
 
     selectedLayout: string;
 
     setSelectedLayout:
-        (value: string) => void;
+        React.Dispatch<
+            React.SetStateAction<string>
+        >;
 
 
 
     onNext: () => void;
+
 
     onApply: () => void;
 
@@ -45,10 +57,34 @@ interface GraphAreaProps {
 
     selectedNode: NodeData | null;
 
+
     setSelectedNode:
-        (node: NodeData | null) => void;
+        React.Dispatch<
+            React.SetStateAction<NodeData | null>
+        >;
+
+
+
+    updateNodePosition:
+
+        (
+
+            id: string,
+
+            position: {
+
+                x: number;
+
+                y: number;
+
+            }
+
+        ) => void;
 
 }
+
+
+
 
 
 
@@ -76,7 +112,9 @@ function GraphArea({
 
     selectedNode,
 
-    setSelectedNode
+    setSelectedNode,
+
+    updateNodePosition
 
 
 }: GraphAreaProps) {
@@ -84,386 +122,598 @@ function GraphArea({
 
 
     /*
-        Phase 0:
-        Waiting for CSV upload
+        Convert NetworkX nodes
+        into Cytoscape elements
     */
 
-    if (!uploaded) {
+    const elements = useMemo(() => {
 
 
-        return (
+        return nodes.map(node => ({
 
-            <main className="graph-area">
 
-                <h2>
-                    Please, upload CSV file.
-                </h2>
+            data: {
 
-            </main>
 
-        );
+                id: node.id,
 
-    }
 
+                label: node.id
 
-
-    /*
-        Phase 1:
-        Choose node identifier
-    */
-
-    if (step === 1) {
-
-
-        return (
-
-            <main className="graph-area">
-
-
-                <AttributeSelector
-
-                    columns={columns}
-
-                    selectedAttribute={
-                        selectedAttribute
-                    }
-
-                    setSelectedAttribute={
-                        setSelectedAttribute
-                    }
-
-                    onNext={
-                        onNext
-                    }
-
-                />
-
-
-            </main>
-
-        );
-
-    }
-
-
-
-
-    /*
-        Phase 2:
-        Choose graph layout
-    */
-
-    if (step === 2) {
-
-
-        return (
-
-            <main className="graph-area">
-
-
-                <LayoutSelector
-
-                    selectedLayout={
-                        selectedLayout
-                    }
-
-                    setSelectedLayout={
-                        setSelectedLayout
-                    }
-
-                    onApply={
-                        onApply
-                    }
-
-                />
-
-
-            </main>
-
-        );
-
-    }
-
-
-
-
-    /*
-        Phase 3:
-        Display graph
-        Phase 4:
-        Node interaction
-    */
-
-
-    if (
-        step === 3 &&
-        nodes.length > 0
-    ) {
-
-
-
-        const elements = nodes.map(
-            (node) => ({
-
-                data: {
-
-                    id: node.id
-
-                },
-
-
-                position: {
-
-                    x:
-                    node.position[0] * 500,
-
-
-                    y:
-                    node.position[1] * 500
-
-                }
-
-            })
-        );
-
-
-
-        const nodeMap =
-            new Map(
-                nodes.map(
-                    node => [
-                        node.id,
-                        node
-                    ]
-                )
-            );
-
-
-
-        const stylesheet = [
-
-
-            {
-                selector: "node",
-
-                style: {
-
-                    label:
-                        "data(id)",
-
-
-                    width: 35,
-
-                    height: 35,
-
-
-                    "background-color":
-                        "#888888",
-
-
-                    color:
-                        "#ffffff",
-
-
-                    "text-valign":
-                        "center",
-
-
-                    "text-halign":
-                        "center",
-
-                    "font-size":
-                        10
-
-                }
 
             },
 
 
-            {
 
-                selector:
-                    "node.selected",
+            position: {
 
 
-                style: {
+                x:
+                    node.position?.x ?? 250,
 
 
-                    "background-color":
-                        "#2563eb",
 
+                y:
+                    node.position?.y ?? 250,
 
-                    width: 50,
-
-                    height: 50
-
-                }
 
             }
 
 
-        ];
+        }));
 
 
+    }, [nodes]);
 
 
-        return (
 
-            <main className="graph-area">
 
 
-                <CytoscapeComponent
 
+    const stylesheet = [
 
-                    elements={
-                        elements
-                    }
 
+        {
 
 
-                    stylesheet={
-                        stylesheet
-                    }
+            selector: "node",
 
 
+            style: {
 
-                    layout={{
-                        name: "preset"
-                    }}
 
+                label:
+                    "data(label)",
 
 
-                    style={{
+                width: 35,
 
-                        width:
-                            "100%",
 
+                height: 35,
 
-                        height:
-                            "100%"
 
-                    }}
+                backgroundColor:
+                    "#888",
 
 
+                color:
+                    "#ffffff",
 
-                    cy={(cy) => {
 
+                textValign:
+                    "center",
 
-                        cy.on(
 
-                            "tap",
+                textHalign:
+                    "center",
 
-                            "node",
 
-                            (event: EventObject) => {
+                fontSize:
+                    12
 
 
-                                /*
-                                    Remove previous highlight
-                                */
+            }
 
-                                cy.nodes()
-                                    .removeClass(
-                                        "selected"
-                                    );
 
+        },
 
 
-                                /*
-                                    Highlight clicked node
-                                */
 
-                                event.target
-                                    .addClass(
-                                        "selected"
-                                    );
+        {
 
 
+            selector:
+                "node:selected",
 
-                                /*
-                                    Get node ID
-                                */
 
-                                const nodeId =
-                                    event.target.id();
+            style: {
 
 
+                backgroundColor:
+                    "#2563eb"
 
-                                /*
-                                    Get full node data
-                                */
 
-                                const node =
-                                    nodeMap.get(
-                                        nodeId
-                                    );
+            }
 
 
+        }
 
-                                if (node) {
 
-                                    setSelectedNode(
-                                        node
-                                    );
+    ];
 
-                                }
 
 
-                            }
 
-                        );
 
 
-                    }}
 
 
-                />
+    const handleNodeClick = (
 
+        event: EventObject
 
+    ) => {
 
-                {
-                    selectedNode && (
 
-                        <NodePopup
+        const nodeId =
+            event.target.id();
 
-                            node={selectedNode}
 
-                            identifier={selectedAttribute}
 
-                        />
+        const node =
+            nodes.find(
 
-                    )
-                }
+                n =>
+                    n.id === nodeId
 
+            );
 
 
-            </main>
 
-        );
+        if (node) {
 
-    }
 
+            setSelectedNode(node);
 
 
+        }
 
-    /*
-        Fallback
-    */
+
+    };
+
+
+
+
+
+
 
     return (
 
-        <main className="graph-area">
 
-            <h2>
-                Data Uploaded
-            </h2>
+        <div className="graph-area">
 
-        </main>
+
+
+
+
+            {
+                step === 0 && (
+
+
+                    <div className="graph-message">
+
+                        Please, upload CSV file.
+
+                    </div>
+
+
+                )
+            }
+
+
+
+
+
+
+
+            {
+                step === 1 && (
+
+
+                    <div className="selection-window">
+
+
+                        <h3>
+
+                            Choose node identifier
+
+                        </h3>
+
+
+
+                        <AttributeSelector
+
+
+                            columns={
+                                columns
+                            }
+
+
+                            selectedAttribute={
+                                selectedAttribute
+                            }
+
+
+                            setSelectedAttribute={
+                                setSelectedAttribute
+                            }
+
+                            onNext={
+                                onNext
+                            }
+
+
+                        />
+
+
+
+                        <button
+
+
+                            className={
+
+                                selectedAttribute
+
+                                ?
+
+                                "next-button active"
+
+                                :
+
+                                "next-button"
+
+                            }
+
+
+
+                            disabled={
+                                !selectedAttribute
+                            }
+
+
+
+                            onClick={
+                                onNext
+                            }
+
+
+                        >
+
+                            Next
+
+                        </button>
+
+
+                    </div>
+
+
+                )
+            }
+
+
+
+
+
+
+
+            {
+                step === 2 && (
+
+
+                    <div className="selection-window">
+
+
+                        <h3>
+
+                            Graph Layout
+
+                        </h3>
+
+
+
+                        <LayoutSelector
+
+
+                            selectedLayout={
+                                selectedLayout
+                            }
+
+
+
+                            setSelectedLayout={
+                                setSelectedLayout
+                            }
+
+                            onApply={
+                                onApply
+                            }
+
+
+                        />
+
+
+
+                        <button
+
+
+                            className={
+
+                                selectedLayout
+
+                                ?
+
+                                "apply-button active"
+
+                                :
+
+                                "apply-button"
+
+                            }
+
+
+
+                            disabled={
+                                !selectedLayout
+                            }
+
+
+
+                            onClick={
+                                onApply
+                            }
+
+
+                        >
+
+                            Apply
+
+                        </button>
+
+
+
+                    </div>
+
+
+                )
+            }
+
+
+
+
+
+
+
+
+
+            {
+                step === 3 && (
+
+
+                    <>
+
+
+                        <CytoscapeComponent
+
+
+
+                            elements={
+                                elements
+                            }
+
+
+
+
+                            stylesheet={
+                                stylesheet
+                            }
+
+
+
+
+
+                            style={
+
+                                {
+
+                                    width:
+                                        "100%",
+
+
+                                    height:
+                                        "100%"
+
+                                }
+
+                            }
+
+
+
+
+
+                            layout={
+
+                                {
+
+                                    name:
+                                        "preset"
+
+                                }
+
+                            }
+
+
+
+
+
+
+                            cy={(cy) => {
+
+
+
+                                /*
+                                    Node click
+                                */
+
+                                cy.on(
+
+                                    "tap",
+
+                                    "node",
+
+                                    handleNodeClick
+
+                                );
+
+
+
+
+
+                                /*
+                                    Background click
+                                */
+
+                                cy.on(
+
+                                    "tap",
+
+                                    (event: EventObject) => {
+
+
+
+                                        if (
+                                            event.target === cy
+                                        ) {
+
+
+                                            setSelectedNode(null);
+
+
+                                        }
+
+
+                                    }
+
+                                );
+
+
+
+
+
+
+
+                                /*
+                                    Save dragged position
+                                */
+
+                                cy.on(
+
+                                    "dragfree",
+
+                                    "node",
+
+                                    (event: EventObject) => {
+
+
+                                        const node =
+                                            event.target;
+
+
+
+                                        updateNodePosition(
+
+
+                                            node.id(),
+
+
+                                            {
+
+
+                                                x:
+                                                    node.position("x"),
+
+
+
+                                                y:
+                                                    node.position("y")
+
+
+                                            }
+
+
+                                        );
+
+
+                                    }
+
+                                );
+
+
+
+                            }}
+
+
+                        />
+
+
+
+
+
+
+
+
+                        {
+                            selectedNode && (
+
+
+                                <NodePopup
+
+
+                                    node={
+                                        selectedNode
+                                    }
+
+
+
+                                    identifier={
+                                        selectedAttribute
+                                    }
+
+
+                                />
+
+
+                            )
+                        }
+
+
+
+                    </>
+
+
+                )
+            }
+
+
+
+
+
+        </div>
+
 
     );
 
-
 }
+
 
 
 export default GraphArea;

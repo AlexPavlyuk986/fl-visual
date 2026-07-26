@@ -37,13 +37,6 @@ function LayoutSelector({
 
         <div className="selection-panel">
 
-
-            <h3>
-                Graph Layout
-            </h3>
-
-
-
             {
                 layouts.map(layout => (
 
@@ -76,31 +69,6 @@ function LayoutSelector({
 
 
             <br />
-
-
-
-            <button
-
-                disabled={!selectedLayout}
-
-                className={
-                    selectedLayout
-                    ?
-                    "active-button"
-                    :
-                    "inactive-button"
-                }
-
-
-                onClick={onApply}
-
-            >
-
-                Apply
-
-            </button>
-
-
 
         </div>
 

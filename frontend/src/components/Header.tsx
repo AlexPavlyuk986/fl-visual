@@ -1,65 +1,294 @@
-import { useRef } from "react";
+import "./Header.css";
 
 
 interface HeaderProps {
+
     onUpload: (file: File) => void;
+
+    uploaded: boolean;
+
+    onAddNode: () => void;
+
+    onDeleteNode: () => void;
+
+    deleteEnabled: boolean;
+
 }
 
 
+
 function Header({
-    onUpload
+
+    onUpload,
+
+    uploaded,
+
+    onAddNode,
+
+    onDeleteNode,
+
+    deleteEnabled
+
 }: HeaderProps) {
 
 
-    const inputRef = useRef<HTMLInputElement>(null);
 
+    const handleFileChange = (
 
-    const handleClick = () => {
-        inputRef.current?.click();
-    };
-
-
-    const handleFile = (
         event: React.ChangeEvent<HTMLInputElement>
+
     ) => {
+
 
         const file =
             event.target.files?.[0];
 
 
-        if (!file)
-            return;
+        if (file) {
+
+            onUpload(file);
+
+        }
 
 
-        onUpload(file);
+        event.target.value = "";
+
     };
 
 
+
     return (
+
         <header className="header">
 
-            <div className="upload-section">
-
-                <button
-                    onClick={handleClick}
-                >
-                    Upload
-                </button>
 
 
-                <input
-                    ref={inputRef}
-                    type="file"
-                    accept=".csv"
-                    hidden
-                    onChange={handleFile}
-                />
+            {/* Data Section */}
+
+            <div className="header-section">
+
+
+                <div className="header-content">
+
+
+                    <div className="data-buttons">
+
+
+                        <label className="header-button upload-button">
+
+
+                            Upload
+
+
+                            <input
+
+                                type="file"
+
+                                accept=".csv"
+
+                                hidden
+
+                                onChange={handleFileChange}
+
+                            />
+
+
+                        </label>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div className="section-title">
+
+                    Data
+
+                </div>
+
 
             </div>
 
+
+
+
+
+            <div className="header-divider"></div>
+
+
+
+
+
+            {/* Nodes Section */}
+
+            <div className="header-section">
+
+
+                <div className="header-content">
+
+
+                    <div className="data-buttons">
+
+
+                        <button
+
+                            type="button"
+
+                            className="header-button add-node-button"
+
+                            disabled={!uploaded}
+
+                            onClick={onAddNode}
+
+                        >
+
+                            Add Node
+
+                        </button>
+
+
+
+
+                        <button
+
+                            type="button"
+
+                            className={
+
+                                deleteEnabled
+
+                                ?
+
+                                "header-button delete-node-button active"
+
+                                :
+
+                                "header-button delete-node-button"
+
+                            }
+
+
+                            disabled={!deleteEnabled}
+
+
+                            onClick={onDeleteNode}
+
+                        >
+
+                            Delete Node
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div className="section-title">
+
+                    Nodes
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+            <div className="header-divider"></div>
+
+
+
+
+
+            {/* Edges Section */}
+
+            <div className="header-section">
+
+
+                <div className="header-content">
+
+
+                    <div className="data-buttons">
+
+
+                        <button
+
+                            type="button"
+
+                            className="header-button add-edge-button"
+
+                        >
+
+                            Add Edge
+
+                        </button>
+
+
+                    </div>
+
+
+                </div>
+
+
+
+                <div className="section-title">
+
+                    Edges
+
+                </div>
+
+
+            </div>
+
+
+
+
+
+            <div className="header-divider"></div>
+
+
+
+
+
+            {/* Model Section */}
+
+            <div className="header-section">
+
+
+                <div className="header-content">
+
+                    {/* Future model buttons */}
+
+                </div>
+
+
+
+                <div className="section-title">
+
+                    Model
+
+                </div>
+
+
+            </div>
+
+
+
         </header>
+
     );
+
 }
+
 
 
 export default Header;

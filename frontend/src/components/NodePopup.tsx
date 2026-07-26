@@ -10,15 +10,54 @@ interface NodePopupProps {
 }
 
 
+
 function NodePopup({
+
     node,
+
     identifier
-}:NodePopupProps){
+
+}: NodePopupProps) {
+
+
+
+    const rows =
+
+        Array.isArray(node.attributes)
+
+        ?
+
+        node.attributes
+
+        :
+
+        [node.attributes];
+
+
+
+
+    // Remove identifier column from table
+
+    const columns =
+
+        Object.keys(rows[0] ?? {})
+
+        .filter(
+
+            column =>
+
+                column !== identifier
+
+        );
+
+
+
 
 
     return (
 
         <div className="node-popup">
+
 
 
             <h3>
@@ -29,34 +68,99 @@ function NodePopup({
 
 
 
+
             <div className="table-container">
 
 
                 <table>
 
 
+                    <thead>
+
+
+                        <tr>
+
+
+                            {
+
+                                columns.map(
+
+                                    column => (
+
+                                        <th key={column}>
+
+                                            {column}
+
+                                        </th>
+
+                                    )
+
+                                )
+
+                            }
+
+
+                        </tr>
+
+
+                    </thead>
+
+
+
+
                     <tbody>
 
-                    {
-                        Object.entries(node.data)
-                        .map(
-                            ([key,value]) => (
 
-                                <tr key={key}>
+                        {
 
-                                    <td>
-                                        {key}
-                                    </td>
+                            rows.map(
 
-                                    <td>
-                                        {String(value)}
-                                    </td>
+                                (row, index) => (
 
-                                </tr>
+
+                                    <tr key={index}>
+
+
+                                        {
+
+                                            columns.map(
+
+                                                column => (
+
+
+                                                    <td key={column}>
+
+
+                                                        {
+
+                                                            String(
+
+                                                                row[column]
+
+                                                            )
+
+                                                        }
+
+
+                                                    </td>
+
+
+                                                )
+
+                                            )
+
+                                        }
+
+
+                                    </tr>
+
+
+                                )
 
                             )
-                        )
-                    }
+
+                        }
+
 
                     </tbody>
 
@@ -71,8 +175,8 @@ function NodePopup({
 
     );
 
-
 }
+
 
 
 export default NodePopup;

@@ -9,6 +9,8 @@ interface HeaderProps {
 
     onAddNode: () => void;
 
+    onAddEdge: () => void;
+
     onDeleteNode: () => void;
 
     deleteEnabled: boolean;
@@ -24,6 +26,8 @@ function Header({
     uploaded,
 
     onAddNode,
+
+    onAddEdge,
 
     onDeleteNode,
 
@@ -225,6 +229,8 @@ function Header({
                             type="button"
 
                             className="header-button add-edge-button"
+
+                            onClick={onAddEdge}
 
                         >
 

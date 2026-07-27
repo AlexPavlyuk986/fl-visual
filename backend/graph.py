@@ -10,7 +10,7 @@ def create_graph(df, identifier, layout):
     global G
 
 
-    # Remove previous graph
+    # Clear previous graph
     G.clear()
 
 
@@ -57,13 +57,11 @@ def create_graph(df, identifier, layout):
 
     else:
 
-        # default
         pos = nx.spring_layout(G)
 
 
 
-
-    # Store coordinates in nodes
+    # Store positions
 
     for node, coords in pos.items():
 
@@ -71,10 +69,12 @@ def create_graph(df, identifier, layout):
         G.nodes[node]["position"] = {
 
 
-            "x": float(coords[0]) * 500,
+            "x":
+                float(coords[0]) * 500,
 
 
-            "y": float(coords[1]) * 500
+            "y":
+                float(coords[1]) * 500
 
 
         }
@@ -82,8 +82,6 @@ def create_graph(df, identifier, layout):
 
 
     return G
-
-
 
 
 
@@ -94,40 +92,26 @@ def add_node(node_id, attributes):
     global G
 
 
-
     G.add_node(
 
         str(node_id),
 
-        attributes=attributes
+        attributes=attributes,
+
+        position={
+
+            "x": 250,
+
+            "y": 250
+
+        }
 
     )
 
 
-
-    # Recalculate positions after adding node
-
-    pos = nx.spring_layout(G)
-
-
-
-    for node, coords in pos.items():
-
-
-        G.nodes[node]["position"] = {
-
-
-            "x": float(coords[0]),
-
-
-            "y": float(coords[1])
-
-
-        }
-
-
-
     return G
+
+
 
 
 
@@ -138,18 +122,42 @@ def delete_node(node_id):
 
     if G.has_node(str(node_id)):
 
-        G.remove_node(str(node_id))
+        G.remove_node(
+            str(node_id)
+        )
 
 
     return G
 
 
 
+
+
+def add_edge(source, target, weight):
+
+    global G
+
+
+    G.add_edge(
+
+        str(source),
+
+        str(target),
+
+        weight=float(weight)
+
+    )
+
+
+    return G
+
+
+
+
+
 def get_nodes():
 
-
     nodes = []
-
 
 
     for node_id, data in G.nodes(data=True):
@@ -158,42 +166,68 @@ def get_nodes():
         nodes.append({
 
 
-            "id": str(node_id),
+            "id":
+                str(node_id),
 
 
 
             "attributes":
-
                 data.get(
-
                     "attributes",
-
-                    {}
-
+                    []
                 ),
 
 
 
             "position":
-
                 data.get(
 
                     "position",
 
                     {
-
-                        "x": 0,
-
-                        "y": 0
-
+                        "x":0,
+                        "y":0
                     }
 
                 )
 
+        })
 
+
+    return nodes
+
+
+
+
+
+def get_edges():
+
+    edges = []
+
+
+    for source, target, data in G.edges(data=True):
+
+
+        edges.append({
+
+
+            "source":
+                str(source),
+
+
+
+            "target":
+                str(target),
+
+
+
+            "weight":
+                data.get(
+                    "weight",
+                    1
+                )
 
         })
 
 
-
-    return nodes
+    return edges

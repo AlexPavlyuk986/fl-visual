@@ -6,7 +6,16 @@ import os
 
 import data_store
 
-from graph import create_graph, add_node, get_nodes, delete_node
+
+from graph import (
+    create_graph,
+    add_node,
+    get_nodes,
+    delete_node,
+    add_edge,
+    get_edges
+)
+
 
 
 app = FastAPI()
@@ -14,6 +23,7 @@ app = FastAPI()
 
 
 app.add_middleware(
+
     CORSMiddleware,
 
     allow_origins=[
@@ -24,7 +34,8 @@ app.add_middleware(
 
     allow_methods=["*"],
 
-    allow_headers=["*"],
+    allow_headers=["*"]
+
 )
 
 
@@ -39,11 +50,16 @@ os.makedirs(
 
 
 
+
+
 @app.get("/")
 def root():
 
     return {
-        "message": "Backend is working!"
+
+        "message":
+            "Backend is working!"
+
     }
 
 
@@ -56,13 +72,11 @@ async def upload_csv(
 ):
 
 
-    # Check extension
-
     if not file.filename.endswith(".csv"):
 
         return {
 
-            "success": False,
+            "success":False,
 
             "message":
                 "Only CSV files are allowed"
@@ -71,27 +85,26 @@ async def upload_csv(
 
 
 
-
     filepath = os.path.join(
-        UPLOAD_DIR,
-        file.filename
-    )
 
+        UPLOAD_DIR,
+
+        file.filename
+
+    )
 
 
     contents = await file.read()
 
 
-
-    with open(filepath, "wb") as f:
+    with open(filepath,"wb") as f:
 
         f.write(contents)
 
 
 
-
-
     try:
+
 
         df = pd.read_csv(filepath)
 
@@ -99,19 +112,18 @@ async def upload_csv(
         data_store.uploaded_dataframe = df
 
 
+
     except Exception as e:
 
 
         return {
 
-            "success": False,
+            "success":False,
 
             "message":
-                f"CSV error: {str(e)}"
+                str(e)
 
         }
-
-
 
 
 
@@ -119,7 +131,7 @@ async def upload_csv(
 
         return {
 
-            "success": False,
+            "success":False,
 
             "message":
                 "CSV file is empty"
@@ -128,28 +140,25 @@ async def upload_csv(
 
 
 
-
-
     print(df.head())
-
-
 
 
 
     return {
 
-        "success": True,
 
-        "message":
-            "CSV uploaded successfully",
+        "success":True,
 
-        "rows":
-            len(df),
 
         "columns":
-            list(df.columns)
+            list(df.columns),
+
+
+        "rows":
+            len(df)
 
     }
+
 
 
 
@@ -160,9 +169,9 @@ async def upload_csv(
 @app.post("/create_graph")
 def create_graph_endpoint(
 
-    identifier: str,
+    identifier:str,
 
-    layout: str
+    layout:str
 
 ):
 
@@ -171,19 +180,16 @@ def create_graph_endpoint(
 
 
 
-
     if df is None:
-
 
         return {
 
-            "success": False,
+            "success":False,
 
             "message":
                 "No data uploaded"
 
         }
-
 
 
 
@@ -206,11 +212,16 @@ def create_graph_endpoint(
         return {
 
 
-            "success": True,
+            "success":True,
 
 
             "nodes":
-                get_nodes()
+                get_nodes(),
+
+
+
+            "edges":
+                get_edges()
 
 
         }
@@ -223,13 +234,14 @@ def create_graph_endpoint(
         return {
 
 
-            "success": False,
+            "success":False,
 
 
             "message":
                 str(e)
 
         }
+
 
 
 
@@ -239,27 +251,17 @@ def create_graph_endpoint(
 
 
 @app.post("/add_node")
-async def add_new_node(
-    data: dict
-):
+async def add_new_node(data:dict):
 
 
     try:
 
 
-        node_id = data["id"]
-
-
-        attributes = data["attributes"]
-
-
-
-
         add_node(
 
-            node_id,
+            data["id"],
 
-            attributes
+            data["attributes"]
 
         )
 
@@ -268,12 +270,11 @@ async def add_new_node(
         return {
 
 
-            "success": True,
+            "success":True,
 
 
             "nodes":
                 get_nodes()
-
 
         }
 
@@ -286,7 +287,7 @@ async def add_new_node(
         return {
 
 
-            "success": False,
+            "success":False,
 
 
             "message":
@@ -294,18 +295,111 @@ async def add_new_node(
 
         }
 
+
+
+
+
+
+
+
+
 @app.delete("/delete_node")
-def delete_node_endpoint(
-    node_id: str
-):
+def delete_node_endpoint(node_id:str):
+
 
     delete_node(node_id)
 
 
+
     return {
 
-        "success": True,
 
-        "node_id": node_id
+        "success":True,
+
+
+        "nodes":
+            get_nodes(),
+
+
+        "edges":
+            get_edges()
 
     }
+
+
+
+
+
+
+
+
+
+@app.post("/add_edge")
+async def add_edge_endpoint(data:dict):
+
+
+    source = data["source"]
+
+    target = data["target"]
+
+    weight = data["weight"]
+
+
+
+    if source == target:
+
+        return {
+
+
+            "success":False,
+
+
+            "message":
+                "Cannot connect node to itself"
+
+        }
+
+
+
+    try:
+
+
+        add_edge(
+
+            source,
+
+            target,
+
+            weight
+
+        )
+
+
+
+        return {
+
+
+            "success":True,
+
+
+            "edges":
+                get_edges()
+
+        }
+
+
+
+
+    except Exception as e:
+
+
+        return {
+
+
+            "success":False,
+
+
+            "message":
+                str(e)
+
+        }

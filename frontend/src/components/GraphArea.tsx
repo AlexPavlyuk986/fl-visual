@@ -1,13 +1,19 @@
 import { useMemo } from "react";
 
 import CytoscapeComponent from "react-cytoscapejs";
-import type { EventObject } from "cytoscape";
 
 import AttributeSelector from "./AttributeSelector";
 import LayoutSelector from "./LayoutSelector";
-import NodePopup from "./NodePopup";
 
-import type { NodeData } from "../types/graph";
+import NodePopup from "./NodePopup";
+import EdgePopup from "./EdgePopup";
+
+import type {
+    NodeData,
+    EdgeData
+} from "../types/graph";
+
+import type cytoscape from "cytoscape";
 
 import "./GraphArea.css";
 
@@ -16,17 +22,17 @@ import "./GraphArea.css";
 interface GraphAreaProps {
 
 
-    step: number;
+    step:number;
 
 
-    uploaded: boolean;
+    uploaded:boolean;
 
 
-    columns: string[];
+    columns:string[];
 
 
+    selectedAttribute:string;
 
-    selectedAttribute: string;
 
     setSelectedAttribute:
         React.Dispatch<
@@ -35,7 +41,8 @@ interface GraphAreaProps {
 
 
 
-    selectedLayout: string;
+    selectedLayout:string;
+
 
     setSelectedLayout:
         React.Dispatch<
@@ -44,23 +51,28 @@ interface GraphAreaProps {
 
 
 
-    onNext: () => void;
+    onNext:()=>void;
 
 
-    onApply: () => void;
-
-
-
-    nodes: NodeData[];
+    onApply:()=>void;
 
 
 
-    selectedNode: NodeData | null;
+    nodes:NodeData[];
+
+
+
+    edges:EdgeData[];
+
+
+
+    selectedNode:NodeData|null;
+
 
 
     setSelectedNode:
         React.Dispatch<
-            React.SetStateAction<NodeData | null>
+            React.SetStateAction<NodeData|null>
         >;
 
 
@@ -69,20 +81,16 @@ interface GraphAreaProps {
 
         (
 
-            id: string,
+            id:string,
 
-            position: {
-
-                x: number;
-
-                y: number;
-
+            position:{
+                x:number;
+                y:number;
             }
 
-        ) => void;
+        )=>void;
 
 }
-
 
 
 
@@ -110,6 +118,8 @@ function GraphArea({
 
     nodes,
 
+    edges,
+
     selectedNode,
 
     setSelectedNode,
@@ -117,44 +127,59 @@ function GraphArea({
     updateNodePosition
 
 
-}: GraphAreaProps) {
+}:GraphAreaProps){
 
 
 
-    /*
-        Convert NetworkX nodes
-        into Cytoscape elements
-    */
-
-    const elements = useMemo(() => {
 
 
-        return nodes.map(node => ({
+    const elements = useMemo(()=>{
 
 
-            data: {
+        const nodeElements = nodes.map(node=>({
 
 
-                id: node.id,
+            data:{
 
+                id:node.id,
 
-                label: node.id
-
+                label:node.id
 
             },
 
 
+            position:
 
-            position: {
-
-
-                x:
-                    node.position?.x ?? 250,
+                node.position
 
 
 
-                y:
-                    node.position?.y ?? 250,
+        }));
+
+
+
+
+        const edgeElements = edges.map(edge=>({
+
+
+            data:{
+
+
+                id:
+                    `${edge.source}-${edge.target}`,
+
+
+                source:
+                    edge.source,
+
+
+                target:
+                    edge.target,
+
+
+                weight:
+                    edge.weight
+
 
 
             }
@@ -163,7 +188,21 @@ function GraphArea({
         }));
 
 
-    }, [nodes]);
+
+        return [
+
+            ...nodeElements,
+
+            ...edgeElements
+
+        ];
+
+
+
+    },[nodes,edges]);
+
+
+
 
 
 
@@ -176,40 +215,52 @@ function GraphArea({
         {
 
 
-            selector: "node",
+            selector:"node",
 
 
-            style: {
+            style:{
 
 
-                label:
-                    "data(label)",
+                label:"data(label)",
 
 
-                width: 35,
+                width:40,
 
 
-                height: 35,
+                height:40,
 
 
-                backgroundColor:
-                    "#888",
+                backgroundColor:"#888",
 
 
-                color:
-                    "#ffffff",
+                color:"#fff",
 
 
-                textValign:
-                    "center",
+                textValign:"center",
 
 
-                textHalign:
-                    "center",
+                textHalign:"center",
 
 
-                fontSize:
-                    12
+                fontSize:12
+
+
+            }
+
+        },
+
+
+
+        {
+
+
+            selector:"node:selected",
+
+
+            style:{
+
+
+                backgroundColor:"#2563eb"
 
 
             }
@@ -222,21 +273,53 @@ function GraphArea({
         {
 
 
-            selector:
-                "node:selected",
+            selector:"edge",
 
 
-            style: {
+            style:{
 
 
-                backgroundColor:
-                    "#2563eb"
+                width:3,
+
+
+                lineColor:"#999",
+
+
+                label:"data(weight)",
+
+
+                fontSize:11,
+
+
+                textRotation:"autorotate"
+
+
+            }
+
+        },
+
+
+
+        {
+
+
+            selector:"edge:selected",
+
+
+            style:{
+
+
+                lineColor:"#2563eb",
+
+
+                width:5
 
 
             }
 
 
         }
+
 
 
     ];
@@ -248,32 +331,64 @@ function GraphArea({
 
 
 
+
     const handleNodeClick = (
-
-        event: EventObject
-
+        event: cytoscape.EventObject
     ) => {
-
 
         const nodeId =
             event.target.id();
 
 
-
         const node =
             nodes.find(
-
                 n =>
                     n.id === nodeId
+            );
+
+
+        if (node) {
+
+            setSelectedNode(node);
+
+        }
+
+    };
+
+
+
+    const handleEdgeClick=(event:cytoscape.EventObject)=>{
+
+
+        const edgeId =
+            event.target.id();
+
+
+
+        const edge =
+            edges.find(
+
+                e=>
+
+                `${e.source}-${e.target}`
+                === edgeId
 
             );
 
 
 
-        if (node) {
+        if(edge){
 
 
-            setSelectedNode(node);
+            /*
+                Store edge selection
+                through selectedNode reset
+                to close node popup
+            */
+
+
+            setSelectedNode(null);
+
 
 
         }
@@ -287,8 +402,9 @@ function GraphArea({
 
 
 
-    return (
 
+
+    return (
 
         <div className="graph-area">
 
@@ -296,19 +412,18 @@ function GraphArea({
 
 
 
-            {
-                step === 0 && (
+        {
+            step===0 &&
 
+            <div className="graph-message">
 
-                    <div className="graph-message">
+                Please, upload CSV file.
 
-                        Please, upload CSV file.
+            </div>
 
-                    </div>
+        }
 
 
-                )
-            }
 
 
 
@@ -316,392 +431,319 @@ function GraphArea({
 
 
 
-            {
-                step === 1 && (
+        {
+            step===1 &&
 
 
-                    <div className="selection-window">
+            <div className="selection-window">
 
 
-                        <h3>
+                <h3>
+                    Choose node identifier
+                </h3>
 
-                            Choose node identifier
 
-                        </h3>
 
+                <AttributeSelector
 
+                    columns={columns}
 
-                        <AttributeSelector
+                    selectedAttribute={
+                        selectedAttribute
+                    }
 
 
-                            columns={
-                                columns
-                            }
+                    setSelectedAttribute={
+                        setSelectedAttribute
+                    }
 
 
-                            selectedAttribute={
-                                selectedAttribute
-                            }
+                    onNext={onNext}
 
+                />
 
-                            setSelectedAttribute={
-                                setSelectedAttribute
-                            }
+                <button
 
-                            onNext={
-                                onNext
-                            }
+                    className={
+                        selectedAttribute
+                        ?
+                        "next-button active"
+                        :
+                        "next-button"
+                    }
 
+                    disabled={!selectedAttribute}
 
-                        />
+                    onClick={onNext}
 
+                >
 
+                    Next
 
-                        <button
+                </button>
 
 
-                            className={
 
-                                selectedAttribute
+            </div>
 
-                                ?
 
-                                "next-button active"
+        }
 
-                                :
 
-                                "next-button"
 
-                            }
 
 
 
-                            disabled={
-                                !selectedAttribute
-                            }
 
 
 
-                            onClick={
-                                onNext
-                            }
+        {
+            step===2 &&
 
 
-                        >
+            <div className="selection-window">
 
-                            Next
 
-                        </button>
+                <h3>
+                    Graph Layout
+                </h3>
 
 
-                    </div>
 
+                <LayoutSelector
 
-                )
-            }
 
+                    selectedLayout={
+                        selectedLayout
+                    }
 
 
+                    setSelectedLayout={
+                        setSelectedLayout
+                    }
 
 
+                    onApply={onApply}
 
 
-            {
-                step === 2 && (
+                />
 
+                <button
 
-                    <div className="selection-window">
+                    className={
+                        selectedLayout
+                        ?
+                        "apply-button active"
+                        :
+                        "apply-button"
+                    }
 
 
-                        <h3>
+                    disabled={!selectedLayout}
 
-                            Graph Layout
 
-                        </h3>
+                    onClick={onApply}
 
+                >
 
+                    Apply
 
-                        <LayoutSelector
+                </button>
 
 
-                            selectedLayout={
-                                selectedLayout
-                            }
+            </div>
 
 
+        }
 
-                            setSelectedLayout={
-                                setSelectedLayout
-                            }
 
-                            onApply={
-                                onApply
-                            }
 
 
-                        />
 
 
 
-                        <button
 
 
-                            className={
+        {
+            step===3 &&
 
-                                selectedLayout
 
-                                ?
+            <>
 
-                                "apply-button active"
 
-                                :
+            <CytoscapeComponent
 
-                                "apply-button"
 
-                            }
+                elements={elements}
 
 
 
-                            disabled={
-                                !selectedLayout
-                            }
+                stylesheet={stylesheet}
 
 
 
-                            onClick={
-                                onApply
-                            }
+                style={{
 
+                    width:"100%",
 
-                        >
+                    height:"100%"
 
-                            Apply
+                }}
 
-                        </button>
 
 
+                layout={{
 
-                    </div>
+                    name:"preset"
 
+                }}
 
-                )
-            }
 
 
+                cy={(cy)=>{
 
 
+                    cy.on(
 
+                        "tap",
 
+                        "node",
 
+                        handleNodeClick
 
+                    );
 
-            {
-                step === 3 && (
 
 
-                    <>
+                    cy.on(
 
+                        "tap",
 
-                        <CytoscapeComponent
+                        "edge",
 
+                        handleEdgeClick
 
+                    );
 
-                            elements={
-                                elements
-                            }
 
 
 
 
-                            stylesheet={
-                                stylesheet
-                            }
 
+                    cy.on(
 
+                        "tap",
 
+                        (event:cytoscape.EventObject)=>{
 
 
-                            style={
+                            if(
 
-                                {
+                                event.target === cy
 
-                                    width:
-                                        "100%",
+                            ){
 
-
-                                    height:
-                                        "100%"
-
-                                }
+                                setSelectedNode(null);
 
                             }
 
 
-
-
-
-                            layout={
-
-                                {
-
-                                    name:
-                                        "preset"
-
-                                }
-
-                            }
-
-
-
-
-
-
-                            cy={(cy) => {
-
-
-
-                                /*
-                                    Node click
-                                */
-
-                                cy.on(
-
-                                    "tap",
-
-                                    "node",
-
-                                    handleNodeClick
-
-                                );
-
-
-
-
-
-                                /*
-                                    Background click
-                                */
-
-                                cy.on(
-
-                                    "tap",
-
-                                    (event: EventObject) => {
-
-
-
-                                        if (
-                                            event.target === cy
-                                        ) {
-
-
-                                            setSelectedNode(null);
-
-
-                                        }
-
-
-                                    }
-
-                                );
-
-
-
-
-
-
-
-                                /*
-                                    Save dragged position
-                                */
-
-                                cy.on(
-
-                                    "dragfree",
-
-                                    "node",
-
-                                    (event: EventObject) => {
-
-
-                                        const node =
-                                            event.target;
-
-
-
-                                        updateNodePosition(
-
-
-                                            node.id(),
-
-
-                                            {
-
-
-                                                x:
-                                                    node.position("x"),
-
-
-
-                                                y:
-                                                    node.position("y")
-
-
-                                            }
-
-
-                                        );
-
-
-                                    }
-
-                                );
-
-
-
-                            }}
-
-
-                        />
-
-
-
-
-
-
-
-
-                        {
-                            selectedNode && (
-
-
-                                <NodePopup
-
-
-                                    node={
-                                        selectedNode
-                                    }
-
-
-
-                                    identifier={
-                                        selectedAttribute
-                                    }
-
-
-                                />
-
-
-                            )
                         }
 
+                    );
 
 
-                    </>
 
 
-                )
+
+
+
+                    cy.on(
+
+                        "dragfree",
+
+                        "node",
+
+                        (event:cytoscape.EventObject)=>{
+
+
+                            const node =
+                                event.target;
+
+
+
+                            const position =
+                                node.position();
+
+
+
+                            updateNodePosition(
+
+                                node.id(),
+
+                                {
+
+                                    x:
+                                    position.x,
+
+
+                                    y:
+                                    position.y
+
+                                }
+
+                            );
+
+
+                        }
+
+                    );
+
+
+
+                }}
+
+
+
+            />
+
+
+
+
+
+
+
+
+
+
+            {
+                selectedNode &&
+
+
+                <NodePopup
+
+                    node={selectedNode}
+
+                    identifier={
+                        selectedAttribute
+                    }
+
+
+                />
+
             }
+
+
+
+
+
+
+
+            </>
+
+
+        }
+
 
 
 
@@ -709,8 +751,8 @@ function GraphArea({
 
         </div>
 
-
     );
+
 
 }
 

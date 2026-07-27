@@ -3,11 +3,14 @@ import { useState } from "react";
 import Header from "./components/Header";
 import GraphArea from "./components/GraphArea";
 import Footer from "./components/Footer";
+
 import AddNodeModal from "./components/AddNodeModal";
+import AddEdgeModal from "./components/AddEdgeModal";
 
 import { api } from "./services/api";
 
-import type { NodeData } from "./types/graph";
+import type { NodeData, EdgeData } from "./types/graph";
+
 
 
 function App() {
@@ -17,25 +20,24 @@ function App() {
         useState(false);
 
 
-
     const [columns, setColumns] =
         useState<string[]>([]);
-
 
 
     const [selectedAttribute, setSelectedAttribute] =
         useState("");
 
 
-
     const [selectedLayout, setSelectedLayout] =
         useState("");
-
 
 
     const [nodes, setNodes] =
         useState<NodeData[]>([]);
 
+
+    const [edges, setEdges] =
+        useState<EdgeData[]>([]);
 
 
     const [selectedNode, setSelectedNode] =
@@ -48,17 +50,13 @@ function App() {
 
 
 
-    /*
-        0 - Waiting for CSV upload
-        1 - Select identifier
-        2 - Select layout
-        3 - Display graph
-    */
+    const [showAddEdge, setShowAddEdge] =
+        useState(false);
+
+
 
     const [step, setStep] =
         useState(0);
-
-
 
 
 
@@ -68,28 +66,11 @@ function App() {
         Upload CSV
     */
 
-    const uploadFile = async (
-        file: File
-    ) => {
-
-
-        if (!file.name.endsWith(".csv")) {
-
-
-            alert(
-                "Please upload CSV file."
-            );
-
-
-            return;
-
-        }
-
+    const uploadFile = async(file:File)=>{
 
 
         const formData =
             new FormData();
-
 
 
         formData.append(
@@ -99,7 +80,7 @@ function App() {
 
 
 
-        try {
+        try{
 
 
             const response =
@@ -110,11 +91,10 @@ function App() {
 
 
 
-            if (response.data.success) {
+            if(response.data.success){
 
 
                 setUploaded(true);
-
 
 
                 setColumns(
@@ -122,34 +102,16 @@ function App() {
                 );
 
 
-
                 setStep(1);
-
-
-            }
-
-            else {
-
-
-                alert(
-                    response.data.message
-                );
 
             }
 
 
         }
 
-        catch(error) {
-
+        catch(error){
 
             console.error(error);
-
-
-            alert(
-                "Upload failed"
-            );
-
 
         }
 
@@ -162,14 +124,15 @@ function App() {
 
 
 
+
     /*
-        Create NetworkX graph
+        Create graph
     */
 
-    const createGraph = async () => {
+    const createGraph = async()=>{
 
 
-        try {
+        try{
 
 
             const response =
@@ -181,14 +144,11 @@ function App() {
 
                     {
 
-                        params: {
+                        params:{
 
-                            identifier:
-                                selectedAttribute,
+                            identifier:selectedAttribute,
 
-
-                            layout:
-                                selectedLayout
+                            layout:selectedLayout
 
                         }
 
@@ -198,95 +158,82 @@ function App() {
 
 
 
-            if (response.data.success) {
+            if(response.data.success){
 
 
                 setNodes(
-
                     response.data.nodes
-
                 );
 
+
+                setEdges(
+                    response.data.edges
+                );
 
 
                 setStep(3);
-
-
-            }
-
-            else {
-
-
-                alert(
-                    response.data.message
-                );
-
 
             }
 
 
         }
 
-        catch(error) {
-
+        catch(error){
 
             console.error(error);
-
 
             alert(
                 "Graph creation failed"
             );
-
 
         }
 
     };
 
 
+
+
+
+
+
+
     /*
-        Save manually dragged node position
+        Save dragged positions
     */
 
     const updateNodePosition = (
 
-        id: string,
+        id:string,
 
-        position: {
-
-            x: number;
-
-            y: number;
-
+        position:{
+            x:number;
+            y:number;
         }
 
-    ) => {
+    )=>{
 
 
-        setNodes(
+        setNodes(previous=>
 
-            previous =>
+            previous.map(node=>
 
-                previous.map(node =>
+                node.id===id
 
+                ?
 
-                    node.id === id
+                {
 
-                    ?
+                    ...node,
 
-                    {
+                    position
 
-                        ...node,
+                }
 
-                        position
+                :
 
-                    }
+                node
 
-                    :
-
-                    node
-
-
-                )
+            )
 
         );
 
@@ -294,124 +241,57 @@ function App() {
     };
 
 
-    /*
-        Delete the selected node
-    */
-
-    const deleteNode = async () => {
-
-
-        if (!selectedNode) {
-
-            return;
-
-        }
 
 
 
-        try {
 
 
-            await api.delete(
-                "/delete_node",
-                {
-
-                    params: {
-
-                        node_id:
-                            selectedNode.id
-
-                    }
-
-                }
-
-            );
-
-
-
-            setNodes(
-                previous =>
-                    previous.filter(
-                        node =>
-                            node.id !== selectedNode.id
-                    )
-            );
-
-
-
-            setSelectedNode(null);
-
-
-        }
-
-        catch(error) {
-
-            console.error(error);
-
-            alert(
-                "Node deletion failed"
-            );
-
-        }
-
-    };
 
 
     /*
-        Add new node from AddNodeModal
-
-        Modal returns:
-
-        {
-            attribute1: value1,
-            attribute2: value2
-        }
-
-        Convert it to NodeData.
+        Add node
     */
 
     const addNode = (
 
-        data: Record<string, string>
+        data:Record<string,string>
 
-    ): boolean => {
+    ):boolean=>{
 
-        const nodeId =
+
+        const id =
             data[selectedAttribute];
 
-        const exists =
-            nodes.some(
-                node =>
-                    node.id === nodeId
-            );
 
-        if (exists) {
+
+        if(
+            nodes.some(
+                node=>node.id===id
+            )
+        ){
+
             return false;
+
         }
 
-        const newNode: NodeData = {
 
 
-            id:
-
-                data[selectedAttribute],
+        const newNode:NodeData={
 
 
-
-            attributes:
-
-                [data],
+            id,
 
 
-
-            position: {
-
-
-                x: 250,
+            attributes:[
+                data
+            ],
 
 
-                y: 250
+            position:{
 
+                x:250,
+
+                y:250
 
             }
 
@@ -420,24 +300,170 @@ function App() {
 
 
 
+        setNodes(previous=>[
 
-        setNodes(
+            ...previous,
 
-            previous => [
+            newNode
 
-                ...previous,
+        ]);
 
-                newNode
 
-            ]
 
-        );
-
-        // close modal only after successful creation
         setShowAddNode(false);
+
+
 
         return true;
 
+    };
+
+
+
+
+
+
+
+
+
+    /*
+        Add edge
+    */
+
+    const addEdge = async(
+
+        source:string,
+
+        target:string,
+
+        weight:number
+
+    ):Promise<boolean>=>{
+
+
+        try{
+
+
+            const response =
+                await api.post(
+
+                    "/add_edge",
+
+                    {
+
+                        source,
+
+                        target,
+
+                        weight
+
+                    }
+
+                );
+
+
+
+            if(response.data.success){
+
+
+                setEdges(
+                    response.data.edges
+                );
+
+
+                setShowAddEdge(false);
+
+
+                return true;
+
+            }
+
+
+            return false;
+
+
+        }
+
+        catch(error){
+
+
+            console.error(error);
+
+
+            return false;
+
+        }
+
+
+    };
+
+
+
+
+
+
+
+
+
+    /*
+        Delete node
+    */
+
+    const deleteNode = async()=>{
+
+
+        if(!selectedNode)
+            return;
+
+
+
+        await api.delete(
+
+            "/delete_node",
+
+            {
+
+                params:{
+
+                    node_id:selectedNode.id
+
+                }
+
+            }
+
+        );
+
+
+
+        setNodes(previous=>
+
+            previous.filter(
+
+                node=>
+
+                    node.id!==selectedNode.id
+
+            )
+
+        );
+
+
+        setEdges(previous=>
+
+            previous.filter(
+
+                edge=>
+
+                    edge.source!==selectedNode.id &&
+
+                    edge.target!==selectedNode.id
+
+            )
+
+        );
+
+
+        setSelectedNode(null);
 
     };
 
@@ -451,43 +477,26 @@ function App() {
 
     return (
 
-
         <div className="app-container">
-
-
-
 
 
             <Header
 
+                onUpload={uploadFile}
 
-                onUpload={
-                    uploadFile
-                }
+                uploaded={uploaded}
 
+                onAddNode={()=>setShowAddNode(true)}
 
-
-                uploaded={
-                    uploaded
-                }
-
-
-
-                onAddNode={() =>
-                    setShowAddNode(true)
-                }
+                onAddEdge={()=>setShowAddEdge(true)}
 
                 onDeleteNode={deleteNode}
 
-
                 deleteEnabled={
-                    selectedNode !== null
+                    selectedNode!==null
                 }
 
             />
-
-
-
 
 
 
@@ -495,27 +504,12 @@ function App() {
 
             <GraphArea
 
+                step={step}
+
+                uploaded={uploaded}
 
 
-                step={
-                    step
-                }
-
-
-
-                uploaded={
-                    uploaded
-                }
-
-
-
-
-                columns={
-                    columns
-                }
-
-
-
+                columns={columns}
 
 
                 selectedAttribute={
@@ -523,16 +517,9 @@ function App() {
                 }
 
 
-
-
-
                 setSelectedAttribute={
                     setSelectedAttribute
                 }
-
-
-
-
 
 
                 selectedLayout={
@@ -540,55 +527,27 @@ function App() {
                 }
 
 
-
-
-
                 setSelectedLayout={
                     setSelectedLayout
                 }
 
 
+                onNext={()=>setStep(2)}
 
 
-
-                onNext={() =>
-                    setStep(2)
-                }
+                onApply={createGraph}
 
 
+                nodes={nodes}
 
 
-
-                onApply={
-                    createGraph
-                }
+                edges={edges}
 
 
+                selectedNode={selectedNode}
 
 
-
-                nodes={
-                    nodes
-                }
-
-
-
-
-
-                selectedNode={
-                    selectedNode
-                }
-
-
-
-
-
-                setSelectedNode={
-                    setSelectedNode
-                }
-
-
-
+                setSelectedNode={setSelectedNode}
 
 
                 updateNodePosition={
@@ -596,12 +555,7 @@ function App() {
                 }
 
 
-
             />
-
-
-
-
 
 
 
@@ -615,39 +569,22 @@ function App() {
 
 
 
-
             {
-                showAddNode && (
+                showAddNode &&
 
+                <AddNodeModal
 
-                    <AddNodeModal
+                    columns={columns}
 
+                    identifier={selectedAttribute}
 
-                        columns={
-                            columns
-                        }
+                    onAdd={addNode}
 
+                    onClose={()=>
+                        setShowAddNode(false)
+                    }
 
-                         identifier={
-                            selectedAttribute
-                        }
-
-
-                        onAdd={
-                            addNode
-                        }
-
-
-                        onClose={() =>
-                            setShowAddNode(false)
-                        }
-
-
-
-                    />
-
-
-                )
+                />
 
             }
 
@@ -655,8 +592,27 @@ function App() {
 
 
 
-        </div>
 
+            {
+                showAddEdge &&
+
+                <AddEdgeModal
+
+                    nodes={nodes}
+
+                    onAdd={addEdge}
+
+                    onClose={()=>
+                        setShowAddEdge(false)
+                    }
+
+                />
+
+            }
+
+
+
+        </div>
 
     );
 

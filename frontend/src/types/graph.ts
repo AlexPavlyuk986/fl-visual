@@ -1,42 +1,67 @@
 export interface NodeData {
 
-    /**
-     * Unique node identifier.
-     * 
-     * Example:
-     * "1"
-     */
     id: string;
 
 
+    /*
+        All CSV rows belonging to this node.
 
-    /**
-     * All attributes belonging to this datapoint.
-     *
-     * Example:
-     *
-     * {
-     *    station: "1",
-     *    day: "23",
-     *    temp: "12.3"
-     * }
-     */
-    attributes:
-        Record<string,string>[];
+        Example:
+
+        [
+            {
+                day: "23",
+                temp: "12.3"
+            },
+            {
+                day: "24",
+                temp: "13.1"
+            }
+        ]
+
+    */
+
+    attributes: Record<string, string>[];
 
 
-    /**
-     * Optional graph coordinates.
-     * 
-     * Used later for NetworkX layouts
-     * (spring, random, circular).
-     */
-    position?: {
+
+    position: {
 
         x: number;
 
         y: number;
 
     };
+
+}
+
+
+
+
+
+export interface EdgeData {
+
+
+    /*
+        Source node identifier
+    */
+
+    source: string;
+
+
+
+    /*
+        Target node identifier
+    */
+
+    target: string;
+
+
+
+    /*
+        Edge weight
+    */
+
+    weight: number;
 
 }

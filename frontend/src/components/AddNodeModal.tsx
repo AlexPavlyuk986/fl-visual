@@ -1,7 +1,8 @@
 import { useState } from "react";
 import "./AddNodeModal.css";
 
-interface Props {
+
+interface AddNodeModalProps {
 
     columns: string[];
 
@@ -9,46 +10,69 @@ interface Props {
 
     onClose: () => void;
 
-    onAdd: (data: Record<string,string>) => boolean;
+    onAdd: (
+        data: Record<string, string>
+    ) => boolean;
 
 }
 
 
 
 function AddNodeModal({
+
     columns,
+
     identifier,
+
     onClose,
+
     onAdd
-}: Props) {
+
+}: AddNodeModalProps) {
 
 
     const [values, setValues] =
-        useState<Record<string,string>>({});
+        useState<Record<string, string>>({});
+
 
     const [warning, setWarning] =
-    useState("");
+        useState("");
+
+
 
     const handleChange = (
-        column:string,
-        value:string
+
+        column: string,
+
+        value: string
+
     ) => {
+
 
         setValues({
 
             ...values,
 
-            [column]:value
+            [column]: value
 
         });
 
+
     };
 
+
+
     const canAdd =
+
         Boolean(
+
             values[identifier]
+
         );
-     const handleAdd = () => {
+
+
+
+    const handleAdd = () => {
 
 
         if (!canAdd) {
@@ -57,28 +81,38 @@ function AddNodeModal({
 
         }
 
+
+
         const success =
+
             onAdd(values);
+
+
 
         if (!success) {
 
 
             setWarning(
+
                 "A node with this identifier already exists."
+
             );
 
 
             return;
 
-
         }
+
+
 
         setWarning("");
 
     };
 
 
+
     return (
+
 
         <div className="modal-overlay">
 
@@ -87,99 +121,156 @@ function AddNodeModal({
 
 
                 <h3>
+
                     Add New Node
+
                 </h3>
+
 
 
 
                 {
                     columns.map(column => (
 
+
                         <div
+
                             key={column}
+
                             className="attribute-row"
+
                         >
 
+
                             <label>
+
                                 {column}
+
                             </label>
+
 
 
                             <input
 
+
                                 value={
+
                                     values[column] ?? ""
+
                                 }
 
+
                                 onChange={
+
                                     e =>
+
                                     handleChange(
+
                                         column,
+
                                         e.target.value
+
                                     )
+
                                 }
+
 
                             />
 
+
                         </div>
+
 
                     ))
                 }
 
+
+
+
+
                 {
+
                     warning && (
+
 
                         <div className="node-warning">
 
+
                             {warning}
+
 
                         </div>
 
+
                     )
+
                 }
+
+
+
+
 
                 <div className="modal-buttons">
 
 
                     <button
+
+                        className="modal-button active"
+
                         onClick={onClose}
+
                     >
+
                         Cancel
+
                     </button>
+
+
 
 
                     <button
 
+
                         className={
+
                             canAdd
+
                             ?
+
                             "modal-button active"
+
                             :
+
                             "modal-button"
+
                         }
 
 
-                        disabled={
-                            !canAdd
-                        }
+                        disabled={!canAdd}
 
 
                         onClick={handleAdd}
+
 
                     >
 
                         Add
 
+
                     </button>
+
 
 
                 </div>
 
 
+
             </div>
 
 
+
         </div>
+
 
     );
 

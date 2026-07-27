@@ -1,0 +1,192 @@
+/* ===========================
+   Edge Popup
+=========================== */
+
+.edge-popup {
+
+    position: absolute;
+
+    top: 20px;
+
+    right: 20px;
+
+
+    width: 260px;
+
+
+    padding: 20px;
+
+
+    background: #ffffff;
+
+
+    border-radius: 8px;
+
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.15);
+
+
+    z-index: 100;
+
+
+    box-sizing: border-box;
+
+
+}
+
+
+
+/* ===========================
+   Title
+=========================== */
+
+.edge-popup h3 {
+
+    margin: 0 0 16px 0;
+
+
+    text-align: center;
+
+
+    font-size: 16px;
+
+
+    font-weight: 600;
+
+
+    color: #333333;
+
+}
+
+
+
+/* ===========================
+   Edge Information Table
+=========================== */
+
+.edge-popup table {
+
+    width: 100%;
+
+
+    border-collapse: collapse;
+
+
+    font-size: 14px;
+
+}
+
+
+
+.edge-popup td {
+
+    padding: 8px;
+
+
+    border-bottom: 1px solid #e5e5e5;
+
+}
+
+
+
+.edge-popup td:first-child {
+
+    text-align: left;
+
+
+    color: #555555;
+
+
+    font-weight: 500;
+
+}
+
+
+
+.edge-popup td:last-child {
+
+    text-align: right;
+
+
+    color: #222222;
+
+}
+
+
+
+/* Remove border from last row */
+
+.edge-popup tr:last-child td {
+
+    border-bottom: none;
+
+}
+
+
+
+/* ===========================
+   Close button (optional)
+=========================== */
+
+.edge-popup button {
+
+    margin-top: 16px;
+
+
+    width: 80px;
+
+
+    height: 36px;
+
+
+    display: block;
+
+
+    margin-left: auto;
+
+
+    margin-right: auto;
+
+
+    border: none;
+
+
+    border-radius: 6px;
+
+
+    background: #2563eb;
+
+
+    color: white;
+
+
+    font-size: 14px;
+
+
+    cursor: pointer;
+
+
+    transition:
+
+        background-color 0.2s ease,
+
+        transform 0.05s ease;
+
+}
+
+
+
+.edge-popup button:hover {
+
+    background: #1d4ed8;
+
+}
+
+
+
+.edge-popup button:active {
+
+    transform: scale(0.96);
+
+}

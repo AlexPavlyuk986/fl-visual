@@ -3,190 +3,163 @@
 =========================== */
 
 .edge-popup {
+  position: absolute;
 
-    position: absolute;
+  top: 20px;
 
-    top: 20px;
+  right: 20px;
 
-    right: 20px;
+  width: 260px;
 
+  padding: 20px;
 
-    width: 260px;
+  background: #ffffff;
 
+  border-radius: 8px;
 
-    padding: 20px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 
+  z-index: 100;
 
-    background: #ffffff;
-
-
-    border-radius: 8px;
-
-
-    box-shadow:
-        0 4px 12px rgba(0, 0, 0, 0.15);
-
-
-    z-index: 100;
-
-
-    box-sizing: border-box;
-
-
+  box-sizing: border-box;
 }
-
-
 
 /* ===========================
    Title
 =========================== */
 
 .edge-popup h3 {
+  margin: 0 0 16px 0;
 
-    margin: 0 0 16px 0;
+  text-align: center;
 
+  font-size: 16px;
 
-    text-align: center;
+  font-weight: 600;
 
-
-    font-size: 16px;
-
-
-    font-weight: 600;
-
-
-    color: #333333;
-
+  color: #333333;
 }
-
-
 
 /* ===========================
    Edge Information Table
 =========================== */
 
 .edge-popup table {
+  width: 100%;
 
-    width: 100%;
+  border-collapse: collapse;
 
-
-    border-collapse: collapse;
-
-
-    font-size: 14px;
-
+  font-size: 14px;
 }
-
-
 
 .edge-popup td {
+  padding: 8px;
 
-    padding: 8px;
-
-
-    border-bottom: 1px solid #e5e5e5;
-
+  border-bottom: 1px solid #e5e5e5;
 }
-
-
 
 .edge-popup td:first-child {
+  text-align: left;
 
-    text-align: left;
+  color: #555555;
 
-
-    color: #555555;
-
-
-    font-weight: 500;
-
+  font-weight: 500;
 }
-
-
 
 .edge-popup td:last-child {
+  text-align: right;
 
-    text-align: right;
-
-
-    color: #222222;
-
+  color: #222222;
 }
-
-
 
 /* Remove border from last row */
 
 .edge-popup tr:last-child td {
-
-    border-bottom: none;
-
+  border-bottom: none;
 }
-
-
 
 /* ===========================
    Close button (optional)
 =========================== */
 
 .edge-popup button {
+  margin-top: 16px;
 
-    margin-top: 16px;
+  width: 80px;
 
+  height: 36px;
 
-    width: 80px;
+  display: block;
 
+  margin-left: auto;
 
-    height: 36px;
+  margin-right: auto;
 
+  border: none;
 
-    display: block;
+  border-radius: 6px;
 
+  background: #2563eb;
 
-    margin-left: auto;
+  color: white;
 
+  font-size: 14px;
 
-    margin-right: auto;
+  cursor: pointer;
 
-
-    border: none;
-
-
-    border-radius: 6px;
-
-
-    background: #2563eb;
-
-
-    color: white;
-
-
-    font-size: 14px;
-
-
-    cursor: pointer;
-
-
-    transition:
-
-        background-color 0.2s ease,
-
-        transform 0.05s ease;
-
+  transition:
+    background-color 0.2s ease,
+    transform 0.05s ease;
 }
-
-
 
 .edge-popup button:hover {
-
-    background: #1d4ed8;
-
+  background: #1d4ed8;
 }
 
-
-
 .edge-popup button:active {
+  transform: scale(0.96);
+}
 
-    transform: scale(0.96);
+.edge-apply-button {
+  width: 90px;
 
+  height: 36px;
+
+  margin-top: 20px;
+
+  align-self: center;
+
+  border: none;
+
+  border-radius: 4px;
+
+  background-color: #d9d9d9;
+
+  color: #555;
+
+  cursor: not-allowed;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.edge-apply-button.active {
+  background-color: #2563eb;
+
+  color: white;
+
+  cursor: pointer;
+}
+
+.edge-apply-button.active:hover {
+  background-color: #1d4ed8;
+}
+
+.edge-apply-button.active:active {
+  transform: scale(0.95);
 }

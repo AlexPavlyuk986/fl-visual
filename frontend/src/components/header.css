@@ -3,315 +3,224 @@
 =========================== */
 
 .header {
+  height: 100px;
 
-    height: 100px;
+  display: flex;
 
-    display: flex;
+  align-items: stretch;
 
-    align-items: stretch;
+  background: #ffffff;
 
-    background: #ffffff;
+  border-bottom: 1px solid #d9d9d9;
 
-    border-bottom: 1px solid #d9d9d9;
-
-    flex-shrink: 0;
-
+  flex-shrink: 0;
 }
-
-
 
 /* ===========================
    Header Sections
 =========================== */
 
 .header-section {
+  display: flex;
 
-    display: flex;
+  flex-direction: column;
 
-    flex-direction: column;
+  justify-content: space-between;
 
-    justify-content: space-between;
+  padding: 8px 16px;
 
-    padding: 8px 16px;
+  width: fit-content;
 
-    width: fit-content;
-
-    flex-shrink: 0;
-
-    background: transparent;
-
+  flex-shrink: 0;
 }
-
-
 
 .header-content {
+  flex: 1;
 
-    flex: 1;
+  display: flex;
 
-    display: flex;
-
-    align-items: flex-start;
-
-    background: transparent;
-
+  align-items: flex-start;
 }
 
-
-
 /* ===========================
-   Data Buttons Layout
+   Button Layout
 =========================== */
 
 .data-buttons {
+  display: flex;
 
-    display: flex;
+  flex-direction: row;
 
-    flex-direction: row;
+  align-items: flex-start;
 
-    align-items: flex-start;
-
-    gap: 8px;
-
+  gap: 8px;
 }
-
-
 
 /* ===========================
    Section Title
 =========================== */
 
 .section-title {
+  text-align: center;
 
-    text-align: center;
+  font-size: 13px;
 
-    font-size: 13px;
+  color: #666666;
 
-    color: #666666;
-
-    user-select: none;
-
+  user-select: none;
 }
-
-
 
 /* ===========================
    Divider
 =========================== */
 
 .header-divider {
+  width: 1px;
 
-    width: 1px;
+  background: #d8d8d8;
 
-    background: #d8d8d8;
+  margin-top: 8px;
 
-    margin-top: 8px;
-
-    margin-bottom: 8px;
-
+  margin-bottom: 8px;
 }
-
-
 
 /* ===========================
    Common Header Button
 =========================== */
 
 .header-button {
+  width: 72px;
 
-    width: 72px;
+  height: 72px;
 
-    height: 72px;
+  display: flex;
 
+  justify-content: center;
 
-    display: flex;
+  align-items: center;
 
-    justify-content: center;
+  text-align: center;
 
-    align-items: center;
+  border: none;
 
+  border-radius: 6px;
 
-    text-align: center;
+  font-size: 13px;
 
+  font-weight: 500;
 
-    border: none;
+  font-family: inherit;
 
-    border-radius: 6px;
+  cursor: pointer;
 
+  user-select: none;
 
-    font-size: 13px;
-
-    font-weight: 500;
-
-    font-family: inherit;
-
-
-    cursor: pointer;
-
-    user-select: none;
-
-
-    transition:
-
-        background-color 0.2s,
-
-        transform 0.05s;
-
+  transition:
+    background-color 0.2s ease,
+    transform 0.05s ease;
 }
-
-
 
 /* ===========================
-   Upload Button
+   Disabled Button
 =========================== */
 
-.upload-button {
+.header-button:disabled {
+  background: #bdbdbd;
 
-    background: #2563eb;
+  color: #555555;
 
-    color: white;
+  cursor: not-allowed;
 
+  transform: none;
 }
-
-
-
-.upload-button:hover {
-
-    background: #1d4ed8;
-
-}
-
-
-
-.upload-button:active {
-
-    transform: scale(0.96);
-
-}
-
-
 
 /* ===========================
-   Add Node Button
+   Active Blue Buttons
 =========================== */
 
-.add-node-button {
+.upload-button,
+.add-node-button,
+.add-edge-button {
+  background: #2563eb;
 
-    background: #2563eb;
-
-    color: white;
-
+  color: white;
 }
 
-
-
-.add-node-button:hover {
-
-    background: #1d4ed8;
-
+.upload-button:hover,
+.add-node-button:hover,
+.add-edge-button:hover {
+  background: #1d4ed8;
 }
 
-
-
-.add-node-button:active {
-
-    transform: scale(0.96);
-
+.upload-button:active,
+.add-node-button:active,
+.add-edge-button:active {
+  transform: scale(0.96);
 }
 
+/* ===========================
+   Download Button
+=========================== */
 
+.download-button {
+  background: #bdbdbd;
 
-.add-node-button:disabled {
+  color: #555555;
 
-    background: #bdbdbd;
-
-    color: #555555;
-
-    cursor: not-allowed;
-
-    transform: none;
-
+  cursor: not-allowed;
 }
-
-
 
 /* ===========================
    Delete Node Button
 =========================== */
 
 .delete-node-button {
+  background: #bdbdbd;
 
-    background: #bdbdbd;
+  color: #555555;
 
-    color: #555555;
-
-    cursor: not-allowed;
-
+  cursor: not-allowed;
 }
-
-
 
 .delete-node-button.active {
+  background: #dc2626;
 
-    background: #dc2626;
+  color: white;
 
-    color: white;
-
-    cursor: pointer;
-
+  cursor: pointer;
 }
-
-
 
 .delete-node-button.active:hover {
-
-    background: #b91c1c;
-
+  background: #b91c1c;
 }
-
-
 
 .delete-node-button.active:active {
-
-    transform: scale(0.96);
-
+  transform: scale(0.96);
 }
-
-
 
 /* ===========================
    Button Focus
 =========================== */
 
 .header-button:focus {
-
-    outline: none;
-
+  outline: none;
 }
 
 /* ===========================
-   Add Edge Button
+   Edit Node
 =========================== */
+.edit-node-button {
+  background: #2563eb;
 
-.add-edge-button {
-
-    background: #2563eb;
-
-    color: white;
-
+  color: white;
 }
 
-
-
-.add-edge-button:hover {
-
-    background: #1d4ed8;
-
+.edit-node-button:hover {
+  background: #1d4ed8;
 }
 
+.edit-node-button:disabled {
+  background: #bdbdbd;
 
-
-.add-edge-button:active {
-
-    transform: scale(0.96);
-
+  color: #555;
 }

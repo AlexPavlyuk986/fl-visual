@@ -1,9 +1,7 @@
 export interface NodeData {
+  id: string;
 
-    id: string;
-
-
-    /*
+  /*
         All CSV rows belonging to this node.
 
         Example:
@@ -21,47 +19,31 @@ export interface NodeData {
 
     */
 
-    attributes: Record<string, string>[];
+  attributes: Record<string, string>[];
 
+  position: {
+    x: number;
 
-
-    position: {
-
-        x: number;
-
-        y: number;
-
-    };
-
+    y: number;
+  };
 }
 
-
-
-
-
 export interface EdgeData {
-
-
-    /*
+  /*
         Source node identifier
     */
 
-    source: string;
+  source: string;
 
-
-
-    /*
+  /*
         Target node identifier
     */
 
-    target: string;
+  target: string;
 
-
-
-    /*
+  /*
         Edge weight
     */
 
-    weight: number;
-
+  weight: number;
 }

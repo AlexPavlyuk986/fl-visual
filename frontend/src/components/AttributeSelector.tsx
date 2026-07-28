@@ -5,7 +5,7 @@ interface AttributeSelectorProps {
     selectedAttribute: string;
 
     setSelectedAttribute:
-        (value: string) => void;
+    (value: string) => void;
 
     onNext: () => void;
 

@@ -7,616 +7,384 @@ import Footer from "./components/Footer";
 import AddNodeModal from "./components/AddNodeModal";
 import AddEdgeModal from "./components/AddEdgeModal";
 
+import EdgePopup from "./components/EdgePopup";
+
 import { api } from "./services/api";
 
 import type { NodeData, EdgeData } from "./types/graph";
 
-
-
 function App() {
+  const [uploaded, setUploaded] = useState(false);
 
+  const [columns, setColumns] = useState<string[]>([]);
 
-    const [uploaded, setUploaded] =
-        useState(false);
+  const [selectedAttribute, setSelectedAttribute] = useState("");
 
+  const [selectedLayout, setSelectedLayout] = useState("");
 
-    const [columns, setColumns] =
-        useState<string[]>([]);
+  const [nodes, setNodes] = useState<NodeData[]>([]);
 
+  const [edges, setEdges] = useState<EdgeData[]>([]);
 
-    const [selectedAttribute, setSelectedAttribute] =
-        useState("");
+  const [selectedNode, setSelectedNode] = useState<NodeData | null>(null);
 
+  const [showAddNode, setShowAddNode] = useState(false);
 
-    const [selectedLayout, setSelectedLayout] =
-        useState("");
+  const [showAddEdge, setShowAddEdge] = useState(false);
 
+  const [step, setStep] = useState(0);
 
-    const [nodes, setNodes] =
-        useState<NodeData[]>([]);
+  const [selectedEdge, setSelectedEdge] = useState<EdgeData | null>(null);
 
+  const [showEditNode, setShowEditNode] = useState(false);
 
-    const [edges, setEdges] =
-        useState<EdgeData[]>([]);
+  /*
+            Upload CSV
+        */
 
+  const uploadFile = async (file: File) => {
+    const formData = new FormData();
 
-    const [selectedNode, setSelectedNode] =
-        useState<NodeData | null>(null);
+    formData.append("file", file);
 
+    try {
+      const response = await api.post("/upload", formData);
 
+      if (response.data.success) {
+        setUploaded(true);
 
-    const [showAddNode, setShowAddNode] =
-        useState(false);
+        setColumns(response.data.columns);
 
+        setStep(1);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
+  /*
+            Create graph
+        */
 
-    const [showAddEdge, setShowAddEdge] =
-        useState(false);
+  const createGraph = async () => {
+    try {
+      const response = await api.post(
+        "/create_graph",
 
+        null,
 
+        {
+          params: {
+            identifier: selectedAttribute,
 
-    const [step, setStep] =
-        useState(0);
+            layout: selectedLayout,
+          },
+        },
+      );
 
+      if (response.data.success) {
+        setNodes(response.data.nodes);
 
+        setEdges(response.data.edges);
 
+        setStep(3);
+      }
+    } catch (error) {
+      console.error(error);
 
+      alert("Graph creation failed");
+    }
+  };
 
-    /*
-        Upload CSV
-    */
+  /*
+            Save dragged positions
+        */
 
-    const uploadFile = async(file:File)=>{
+  const updateNodePosition = async (
+    id: string,
 
-
-        const formData =
-            new FormData();
-
-
-        formData.append(
-            "file",
-            file
-        );
-
-
-
-        try{
-
-
-            const response =
-                await api.post(
-                    "/upload",
-                    formData
-                );
-
-
-
-            if(response.data.success){
-
-
-                setUploaded(true);
-
-
-                setColumns(
-                    response.data.columns
-                );
-
-
-                setStep(1);
-
+    position: {
+      x: number;
+      y: number;
+    },
+  ) => {
+    // Update frontend immediately
+    setNodes((previous) =>
+      previous.map((node) =>
+        node.id === id
+          ? {
+              ...node,
+              position,
             }
-
-
-        }
-
-        catch(error){
-
-            console.error(error);
-
-        }
-
-    };
-
-
-
-
-
-
-
-
-
-    /*
-        Create graph
-    */
-
-    const createGraph = async()=>{
-
-
-        try{
-
-
-            const response =
-                await api.post(
-
-                    "/create_graph",
-
-                    null,
-
-                    {
-
-                        params:{
-
-                            identifier:selectedAttribute,
-
-                            layout:selectedLayout
-
-                        }
-
-                    }
-
-                );
-
-
-
-            if(response.data.success){
-
-
-                setNodes(
-                    response.data.nodes
-                );
-
-
-                setEdges(
-                    response.data.edges
-                );
-
-
-                setStep(3);
-
-            }
-
-
-        }
-
-        catch(error){
-
-            console.error(error);
-
-            alert(
-                "Graph creation failed"
-            );
-
-        }
-
-    };
-
-
-
-
-
-
-
-
-    /*
-        Save dragged positions
-    */
-
-    const updateNodePosition = (
-
-        id:string,
-
-        position:{
-            x:number;
-            y:number;
-        }
-
-    )=>{
-
-
-        setNodes(previous=>
-
-            previous.map(node=>
-
-                node.id===id
-
-                ?
-
-                {
-
-                    ...node,
-
-                    position
-
-                }
-
-                :
-
-                node
-
-            )
-
-        );
-
-
-    };
-
-
-
-
-
-
-
-
-
-    /*
-        Add node
-    */
-
-    const addNode = (
-
-        data:Record<string,string>
-
-    ):boolean=>{
-
-
-        const id =
-            data[selectedAttribute];
-
-
-
-        if(
-            nodes.some(
-                node=>node.id===id
-            )
-        ){
-
-            return false;
-
-        }
-
-
-
-        const newNode:NodeData={
-
-
-            id,
-
-
-            attributes:[
-                data
-            ],
-
-
-            position:{
-
-                x:250,
-
-                y:250
-
-            }
-
-
-        };
-
-
-
-        setNodes(previous=>[
-
-            ...previous,
-
-            newNode
-
-        ]);
-
-
-
-        setShowAddNode(false);
-
-
-
-        return true;
-
-    };
-
-
-
-
-
-
-
-
-
-    /*
-        Add edge
-    */
-
-    const addEdge = async(
-
-        source:string,
-
-        target:string,
-
-        weight:number
-
-    ):Promise<boolean>=>{
-
-
-        try{
-
-
-            const response =
-                await api.post(
-
-                    "/add_edge",
-
-                    {
-
-                        source,
-
-                        target,
-
-                        weight
-
-                    }
-
-                );
-
-
-
-            if(response.data.success){
-
-
-                setEdges(
-                    response.data.edges
-                );
-
-
-                setShowAddEdge(false);
-
-
-                return true;
-
-            }
-
-
-            return false;
-
-
-        }
-
-        catch(error){
-
-
-            console.error(error);
-
-
-            return false;
-
-        }
-
-
-    };
-
-
-
-
-
-
-
-
-
-    /*
-        Delete node
-    */
-
-    const deleteNode = async()=>{
-
-
-        if(!selectedNode)
-            return;
-
-
-
-        await api.delete(
-
-            "/delete_node",
-
-            {
-
-                params:{
-
-                    node_id:selectedNode.id
-
-                }
-
-            }
-
-        );
-
-
-
-        setNodes(previous=>
-
-            previous.filter(
-
-                node=>
-
-                    node.id!==selectedNode.id
-
-            )
-
-        );
-
-
-        setEdges(previous=>
-
-            previous.filter(
-
-                edge=>
-
-                    edge.source!==selectedNode.id &&
-
-                    edge.target!==selectedNode.id
-
-            )
-
-        );
-
-
-        setSelectedNode(null);
-
-    };
-
-
-
-
-
-
-
-
-
-    return (
-
-        <div className="app-container">
-
-
-            <Header
-
-                onUpload={uploadFile}
-
-                uploaded={uploaded}
-
-                onAddNode={()=>setShowAddNode(true)}
-
-                onAddEdge={()=>setShowAddEdge(true)}
-
-                onDeleteNode={deleteNode}
-
-                deleteEnabled={
-                    selectedNode!==null
-                }
-
-            />
-
-
-
-
-
-            <GraphArea
-
-                step={step}
-
-                uploaded={uploaded}
-
-
-                columns={columns}
-
-
-                selectedAttribute={
-                    selectedAttribute
-                }
-
-
-                setSelectedAttribute={
-                    setSelectedAttribute
-                }
-
-
-                selectedLayout={
-                    selectedLayout
-                }
-
-
-                setSelectedLayout={
-                    setSelectedLayout
-                }
-
-
-                onNext={()=>setStep(2)}
-
-
-                onApply={createGraph}
-
-
-                nodes={nodes}
-
-
-                edges={edges}
-
-
-                selectedNode={selectedNode}
-
-
-                setSelectedNode={setSelectedNode}
-
-
-                updateNodePosition={
-                    updateNodePosition
-                }
-
-
-            />
-
-
-
-
-
-            <Footer />
-
-
-
-
-
-
-
-            {
-                showAddNode &&
-
-                <AddNodeModal
-
-                    columns={columns}
-
-                    identifier={selectedAttribute}
-
-                    onAdd={addNode}
-
-                    onClose={()=>
-                        setShowAddNode(false)
-                    }
-
-                />
-
-            }
-
-
-
-
-
-
-            {
-                showAddEdge &&
-
-                <AddEdgeModal
-
-                    nodes={nodes}
-
-                    onAdd={addEdge}
-
-                    onClose={()=>
-                        setShowAddEdge(false)
-                    }
-
-                />
-
-            }
-
-
-
-        </div>
-
+          : node,
+      ),
     );
 
-}
+    // Save permanently in backend
+    try {
+      await api.put("/update_node_position", {
+        id,
+        position,
+      });
+    } catch (error) {
+      console.error("Failed to save node position", error);
+    }
+  };
 
+  /*
+            Add node
+        */
+
+  const addNode = async (data: {
+    id: string;
+    attributes: Record<string, string>[];
+  }): Promise<boolean> => {
+    if (nodes.some((node) => node.id === data.id)) {
+      return false;
+    }
+
+    try {
+      const response = await api.post("/add_node", {
+        id: data.id,
+
+        attributes: data.attributes,
+      });
+
+      if (!response.data.success) {
+        return false;
+      }
+
+      setNodes(response.data.nodes);
+
+      // IMPORTANT:
+      // Do not overwrite edges here.
+      // Adding a node does not modify edges.
+
+      setShowAddNode(false);
+
+      return true;
+    } catch (error) {
+      console.error(error);
+
+      return false;
+    }
+  };
+
+  /*
+            Add edge
+        */
+
+  const addEdge = async (
+    source: string,
+
+    target: string,
+
+    weight: number,
+  ): Promise<boolean> => {
+    try {
+      const response = await api.post(
+        "/add_edge",
+
+        {
+          source,
+
+          target,
+
+          weight,
+        },
+      );
+
+      if (response.data.success) {
+        setEdges(response.data.edges);
+
+        setShowAddEdge(false);
+
+        return true;
+      }
+
+      return false;
+    } catch (error) {
+      console.error(error);
+
+      return false;
+    }
+  };
+
+  /*
+            Delete node
+        */
+
+  const deleteNode = async () => {
+    if (!selectedNode) return;
+
+    await api.delete(
+      "/delete_node",
+
+      {
+        params: {
+          node_id: selectedNode.id,
+        },
+      },
+    );
+
+    setNodes((previous) =>
+      previous.filter((node) => node.id !== selectedNode.id),
+    );
+
+    setEdges((previous) =>
+      previous.filter(
+        (edge) =>
+          edge.source !== selectedNode.id && edge.target !== selectedNode.id,
+      ),
+    );
+
+    setSelectedNode(null);
+  };
+
+  const updateEdgeWeight = async (
+    source: string,
+
+    target: string,
+
+    weight: number,
+  ) => {
+    try {
+      const response = await api.put(
+        "/update_edge",
+
+        {
+          source,
+
+          target,
+
+          weight,
+        },
+      );
+
+      if (response.data.success) {
+        setEdges(response.data.edges);
+
+        setSelectedEdge(null);
+      }
+    } catch (error) {
+      console.error(error);
+
+      alert("Failed to update edge weight");
+    }
+  };
+
+  const editNode = async (data: {
+    id: string;
+    attributes: Record<string, string>[];
+  }): Promise<boolean> => {
+    if (!selectedNode) {
+      return false;
+    }
+
+    try {
+      const response = await api.put(
+        "/edit_node",
+
+        {
+          original_id: selectedNode.id,
+
+          id: data.id,
+
+          attributes: data.attributes,
+        },
+      );
+
+      if (!response.data.success) {
+        alert(response.data.message);
+
+        return false;
+      }
+
+      setNodes(response.data.nodes);
+
+      setEdges(response.data.edges);
+
+      const updatedNode = response.data.nodes.find(
+        (node: NodeData) => node.id === data.id,
+      );
+
+      setSelectedNode(updatedNode ?? null);
+
+      setShowEditNode(false);
+
+      return true;
+    } catch (error) {
+      console.error(error);
+
+      return false;
+    }
+  };
+
+  return (
+    <div className="app-container">
+      <Header
+        onUpload={uploadFile}
+        uploaded={uploaded}
+        onAddNode={() => setShowAddNode(true)}
+        onAddEdge={() => setShowAddEdge(true)}
+        onEditNode={() => setShowEditNode(true)}
+        onDeleteNode={deleteNode}
+        deleteEnabled={selectedNode !== null}
+        editEnabled={selectedNode !== null}
+      />
+
+      <GraphArea
+        step={step}
+        uploaded={uploaded}
+        columns={columns}
+        selectedAttribute={selectedAttribute}
+        setSelectedAttribute={setSelectedAttribute}
+        selectedLayout={selectedLayout}
+        setSelectedLayout={setSelectedLayout}
+        onNext={() => setStep(2)}
+        onApply={createGraph}
+        nodes={nodes}
+        selectedNode={selectedNode}
+        setSelectedNode={setSelectedNode}
+        updateNodePosition={updateNodePosition}
+        edges={edges}
+        selectedEdge={selectedEdge}
+        setSelectedEdge={setSelectedEdge}
+        updateEdgeWeight={updateEdgeWeight}
+      />
+
+      <Footer />
+
+      {showAddNode && (
+        <AddNodeModal
+          columns={columns}
+          identifier={selectedAttribute}
+          onSubmit={addNode}
+          onClose={() => setShowAddNode(false)}
+        />
+      )}
+
+      {showAddEdge && (
+        <AddEdgeModal
+          nodes={nodes}
+          onAdd={addEdge}
+          onClose={() => setShowAddEdge(false)}
+        />
+      )}
+
+      {showEditNode && selectedNode && (
+        <AddNodeModal
+          columns={columns}
+          identifier={selectedAttribute}
+          initialRows={selectedNode.attributes}
+          editMode={true}
+          originalIdentifier={selectedNode.id}
+          onSubmit={editNode}
+          onClose={() => setShowEditNode(false)}
+        />
+      )}
+    </div>
+  );
+}
 
 export default App;

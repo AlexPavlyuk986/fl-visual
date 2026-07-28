@@ -1,213 +1,367 @@
+/* ===========================
+   Modal Overlay
+=========================== */
+
 .modal-overlay {
+  position: fixed;
 
-    position: fixed;
+  inset: 0;
 
-    top: 0;
+  display: flex;
 
-    left: 0;
+  justify-content: center;
 
-    width: 100%;
+  align-items: center;
 
-    height: 100%;
+  background: rgba(0, 0, 0, 0.15);
 
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    background: rgba(0,0,0,0.15);
-
-    z-index: 1000;
-
+  z-index: 1000;
 }
 
-
+/* ===========================
+   Modal Window
+=========================== */
 
 .add-node-modal {
+  width: 650px;
 
-    width: 420px;
+  max-height: 80vh;
 
-    max-height: 80vh;
+  overflow: hidden;
 
-    padding: 24px;
+  padding: 24px;
 
-    background-color: #ffffff;
+  background: #ffffff;
 
-    border-radius: 8px;
+  border-radius: 8px;
 
-    box-sizing: border-box;
+  box-sizing: border-box;
 
-    display: flex;
+  display: flex;
 
-    flex-direction: column;
+  flex-direction: column;
 
-    align-items: center;
-
+  align-items: center;
 }
 
-
-
-
+/* ===========================
+   Title
+=========================== */
 
 .add-node-modal h3 {
+  width: 100%;
 
-    margin: 0 0 24px 0;
+  margin: 0 0 24px;
 
-    width: 100%;
+  text-align: center;
 
-    text-align: center;
+  font-size: 18px;
 
-    font-size: 18px;
-
-    font-weight: 600;
-
+  font-weight: 600;
 }
 
-
-
-
+/* ===========================
+   Attribute Rows
+=========================== */
 
 .attribute-row {
+  width: 300px;
 
-    width: 300px;
+  display: flex;
 
-    display: flex;
+  align-items: center;
 
-    align-items: center;
-
-    justify-content: center;
-
-    margin-bottom: 12px;
-
+  margin-bottom: 12px;
 }
-
-
-
-
 
 .attribute-row label {
+  width: 90px;
 
-    width: 90px;
+  margin-right: 15px;
 
-    text-align: center;
+  text-align: right;
 
-    margin-right: 15px;
+  font-size: 14px;
 
-    font-size: 14px;
-
-    color: #333;
-
+  color: #333;
 }
-
-
-
-
 
 .attribute-row input {
+  flex: 1;
 
-    width: 180px;
+  height: 32px;
 
-    height: 32px;
+  padding: 5px 8px;
 
-    padding: 5px 8px;
+  border: 1px solid #ccc;
 
-    border: 1px solid #ccc;
+  border-radius: 4px;
 
-    border-radius: 4px;
+  font-size: 14px;
 
-    font-size: 14px;
-
-    box-sizing: border-box;
-
+  box-sizing: border-box;
 }
 
+/* Key attribute */
 
-
-
-
-.modal-buttons {
-
-    width: 300px;
-
-    display: flex;
-
-    justify-content: center;
-
-    gap: 12px;
-
-    margin-top: 24px;
-
+.key-attribute-name {
+  font-weight: 700;
 }
 
+.key-attribute-label {
+  display: flex;
 
+  flex-direction: column;
 
-
-
-.modal-button {
-
-    width: 80px;
-
-    height: 36px;
-
-    border-radius: 4px;
-
-    border: none;
-
-    background-color: #d9d9d9;
-
-    color: #555;
-
-    cursor: not-allowed;
-
-    font-size: 14px;
-
-    transition:
-
-        background-color 0.15s ease,
-
-        transform 0.1s ease;
-
+  align-items: flex-end;
 }
 
+.key-note {
+  margin-top: 3px;
 
+  font-size: 11px;
 
-.modal-button.active {
+  font-weight: 400;
 
-    background-color: #2563eb;
+  font-style: italic;
 
-    color: white;
-
-    cursor: pointer;
-
+  color: #666;
 }
 
-
-
-.modal-button.active:hover {
-
-    background-color: #1d4ed8;
-
-}
-
-
-
-.modal-button.active:active {
-
-    transform: scale(0.95);
-
-}
+/* ===========================
+   Warning
+=========================== */
 
 .node-warning {
+  width: 300px;
 
-    width: 300px;
+  margin-top: 12px;
 
-    margin-top: 12px;
+  text-align: center;
 
-    text-align: center;
+  color: #dc2626;
 
-    color: #dc2626;
+  font-size: 14px;
+}
 
-    font-size: 14px;
+/* ===========================
+   Buttons
+=========================== */
 
+.modal-buttons {
+  display: flex;
+
+  justify-content: center;
+
+  gap: 12px;
+
+  margin-top: 24px;
+}
+
+.modal-button {
+  height: 36px;
+
+  min-width: 100px;
+
+  padding: 0 16px;
+
+  border: none;
+
+  border-radius: 4px;
+
+  background-color: #d9d9d9;
+
+  color: #555;
+
+  cursor: not-allowed;
+
+  font-size: 14px;
+
+  font-family: inherit;
+
+  font-weight: 500;
+
+  white-space: nowrap;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+/*
+   Active buttons
+*/
+
+.modal-button.active {
+  background-color: #2563eb;
+
+  color: white;
+
+  cursor: pointer;
+}
+
+.modal-button.active:hover {
+  background-color: #1d4ed8;
+}
+
+.modal-button.active:active {
+  transform: scale(0.95);
+}
+
+/* ===========================
+   Node Data Table
+=========================== */
+
+.node-data-table {
+  border-collapse: collapse;
+
+  margin-top: 20px;
+}
+
+.node-data-table th {
+  padding: 8px;
+
+  background: #f3f3f3;
+
+  border: 1px solid #ccc;
+
+  font-size: 14px;
+}
+
+.node-data-table td {
+  padding: 5px;
+
+  border: 1px solid #ccc;
+}
+
+.node-data-table input {
+  width: 100px;
+
+  height: 30px;
+
+  box-sizing: border-box;
+}
+
+/* ===========================
+   Add Row Button
+=========================== */
+
+.add-row-button {
+  min-width: 36px;
+
+  min-height: 36px;
+
+  padding: 6px 12px;
+
+  margin-top: 12px;
+
+  border: none;
+
+  border-radius: 4px;
+
+  background: #2563eb;
+
+  color: white;
+
+  font-size: 14px;
+
+  font-weight: 500;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  display: inline-flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.add-row-button:hover {
+  background: #1d4ed8;
+}
+
+.add-row-button:active {
+  transform: scale(0.95);
+}
+
+/* ===========================
+   Scrollable Node Data Section
+=========================== */
+
+.node-table-container {
+  max-height: 300px;
+
+  overflow-y: auto;
+
+  overflow-x: auto;
+
+  margin-top: 20px;
+}
+
+/* Keep table size stable */
+
+.node-data-table {
+  border-collapse: collapse;
+
+  width: max-content;
+
+  min-width: 100%;
+}
+
+/* ===========================
+   Delete Data Row Button
+=========================== */
+
+.delete-row-button {
+  width: 32px;
+
+  height: 32px;
+
+  padding: 0;
+
+  border: none;
+
+  border-radius: 4px;
+
+  background: #dc2626;
+
+  color: white;
+
+  font-size: 20px;
+
+  font-weight: 600;
+
+  line-height: 1;
+
+  cursor: pointer;
+
+  display: flex;
+
+  justify-content: center;
+
+  align-items: center;
+
+  transition:
+    background-color 0.15s ease,
+    transform 0.1s ease;
+}
+
+.delete-row-button:hover {
+  background: #b91c1c;
+}
+
+.delete-row-button:active {
+  transform: scale(0.95);
 }

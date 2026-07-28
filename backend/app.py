@@ -18,6 +18,7 @@ from graph import (
     edit_node,
     update_node_position,
     get_dataset,
+    delete_edge,
 )
 
 app = FastAPI()
@@ -202,3 +203,21 @@ def get_dataset_endpoint():
         "success": True,
         "dataset": get_dataset(),
     }
+
+
+@app.delete("/delete_edge")
+def delete_edge_endpoint(data: dict):
+
+    try:
+
+        source = data["source"]
+
+        target = data["target"]
+
+        delete_edge(source, target)
+
+        return {"success": True, "edges": get_edges()}
+
+    except Exception as e:
+
+        return {"success": False, "message": str(e)}

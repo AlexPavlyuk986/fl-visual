@@ -111,40 +111,43 @@
 
   font-family: inherit;
 
-  cursor: pointer;
-
   user-select: none;
+
+  cursor: pointer;
 
   transition:
     background-color 0.2s ease,
     transform 0.05s ease;
 }
 
+
 /* ===========================
-   Enabled Buttons
+   Enabled Button Behavior
 =========================== */
 
-.header-button:not(:disabled) {
-  cursor: pointer;
+.header-button:not(:disabled):hover {
+  filter: brightness(0.9);
 }
 
 .header-button:not(:disabled):active {
   transform: scale(0.96);
 }
 
+
 /* ===========================
-   Disabled Buttons
+   Disabled Button
 =========================== */
 
 .header-button:disabled {
-  background: #bdbdbd !important;
+  background: #bdbdbd;
 
-  color: #555555 !important;
+  color: #555555;
 
   cursor: not-allowed;
 
   transform: none;
 }
+
 
 /* ===========================
    Blue Buttons
@@ -160,41 +163,31 @@
   color: white;
 }
 
-.upload-button:hover,
-.review-button:hover,
-.add-node-button:hover,
-.add-edge-button:hover,
-.edit-node-button:hover {
-  background: #1d4ed8;
-}
 
 /* ===========================
-   Download
+   Red Buttons
+=========================== */
+
+.delete-node-button,
+.delete-edge-button {
+  background: #dc2626;
+
+  color: white;
+}
+
+
+/* ===========================
+   Download Button
 =========================== */
 
 .download-button {
   background: #bdbdbd;
 
-  color: #555;
+  color: #555555;
 
   cursor: not-allowed;
 }
 
-/* ===========================
-   Delete Node Button
-=========================== */
-
-.delete-node-button {
-  background: #dc2626;
-
-  color: white;
-
-  cursor: pointer;
-}
-
-.delete-node-button:hover {
-  background: #b91c1c;
-}
 
 /* ===========================
    Focus

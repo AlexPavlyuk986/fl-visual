@@ -16,6 +16,10 @@ interface HeaderProps {
 
   onEditNode: () => void;
 
+  onDeleteEdge: () => void;
+
+  edgeDeleteEnabled: boolean;
+
   editEnabled: boolean;
 
   deleteEnabled: boolean;
@@ -35,6 +39,10 @@ function Header({
   onAddEdge,
 
   onDeleteNode,
+
+  onDeleteEdge,
+
+  edgeDeleteEnabled,
 
   deleteEnabled,
 
@@ -166,6 +174,15 @@ function Header({
               onClick={onAddEdge}
             >
               Add Edge
+            </button>
+
+            <button
+              type="button"
+              className="header-button delete-edge-button"
+              disabled={!edgeDeleteEnabled || reviewActive}
+              onClick={onDeleteEdge}
+            >
+              Delete Edge
             </button>
           </div>
         </div>

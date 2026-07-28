@@ -247,6 +247,29 @@ function App() {
     setSelectedNode(null);
   };
 
+  const deleteEdge = async () => {
+    if (!selectedEdge) return;
+
+    try {
+      const response = await api.delete("/delete_edge", {
+        data: {
+          source: selectedEdge.source,
+          target: selectedEdge.target,
+        },
+      });
+
+      if (response.data.success) {
+        setEdges(response.data.edges);
+
+        setSelectedEdge(null);
+      }
+    } catch (error) {
+      console.error(error);
+
+      alert("Failed to delete edge");
+    }
+  };
+
   const updateEdgeWeight = async (
     source: string,
 
@@ -349,7 +372,9 @@ function App() {
         onAddNode={() => setShowAddNode(true)}
         onAddEdge={() => setShowAddEdge(true)}
         onEditNode={() => setShowEditNode(true)}
+        onDeleteEdge={deleteEdge}
         onDeleteNode={deleteNode}
+        edgeDeleteEnabled={selectedEdge !== null}
         deleteEnabled={selectedNode !== null}
         editEnabled={selectedNode !== null}
         reviewActive={showReview}

@@ -230,3 +230,18 @@ def get_dataset():
             dataset.append(row)
 
     return dataset
+
+
+def delete_edge(source, target):
+
+    global G
+
+    source = str(source)
+
+    target = str(target)
+
+    if G.has_edge(source, target):
+
+        G.remove_edge(source, target)
+
+    return G

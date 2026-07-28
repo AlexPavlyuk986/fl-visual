@@ -38,6 +38,10 @@ function App() {
 
   const [showEditNode, setShowEditNode] = useState(false);
 
+  const [dataset, setDataset] = useState<Record<string, string>[]>([]);
+
+  const [showReview, setShowReview] = useState(false);
+
   /*
             Upload CSV
         */
@@ -54,6 +58,8 @@ function App() {
         setUploaded(true);
 
         setColumns(response.data.columns);
+
+        setDataset(response.data.data);
 
         setStep(1);
       }
@@ -320,22 +326,41 @@ function App() {
     }
   };
 
+  const openReview = async () => {
+    try {
+      const response = await api.get("/dataset");
+
+      if (response.data.success) {
+        setDataset(response.data.dataset);
+
+        setShowReview(true);
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="app-container">
       <Header
         onUpload={uploadFile}
         uploaded={uploaded}
+        onReview={openReview}
         onAddNode={() => setShowAddNode(true)}
         onAddEdge={() => setShowAddEdge(true)}
         onEditNode={() => setShowEditNode(true)}
         onDeleteNode={deleteNode}
         deleteEnabled={selectedNode !== null}
         editEnabled={selectedNode !== null}
+        reviewActive={showReview}
       />
 
       <GraphArea
         step={step}
         uploaded={uploaded}
+        dataset={dataset}
+        showReview={showReview}
+        setShowReview={setShowReview}
         columns={columns}
         selectedAttribute={selectedAttribute}
         setSelectedAttribute={setSelectedAttribute}

@@ -121,13 +121,25 @@
 }
 
 /* ===========================
-   Disabled Button
+   Enabled Buttons
+=========================== */
+
+.header-button:not(:disabled) {
+  cursor: pointer;
+}
+
+.header-button:not(:disabled):active {
+  transform: scale(0.96);
+}
+
+/* ===========================
+   Disabled Buttons
 =========================== */
 
 .header-button:disabled {
-  background: #bdbdbd;
+  background: #bdbdbd !important;
 
-  color: #555555;
+  color: #555555 !important;
 
   cursor: not-allowed;
 
@@ -135,37 +147,35 @@
 }
 
 /* ===========================
-   Active Blue Buttons
+   Blue Buttons
 =========================== */
 
 .upload-button,
+.review-button,
 .add-node-button,
-.add-edge-button {
+.add-edge-button,
+.edit-node-button {
   background: #2563eb;
 
   color: white;
 }
 
 .upload-button:hover,
+.review-button:hover,
 .add-node-button:hover,
-.add-edge-button:hover {
+.add-edge-button:hover,
+.edit-node-button:hover {
   background: #1d4ed8;
 }
 
-.upload-button:active,
-.add-node-button:active,
-.add-edge-button:active {
-  transform: scale(0.96);
-}
-
 /* ===========================
-   Download Button
+   Download
 =========================== */
 
 .download-button {
   background: #bdbdbd;
 
-  color: #555555;
+  color: #555;
 
   cursor: not-allowed;
 }
@@ -175,14 +185,6 @@
 =========================== */
 
 .delete-node-button {
-  background: #bdbdbd;
-
-  color: #555555;
-
-  cursor: not-allowed;
-}
-
-.delete-node-button.active {
   background: #dc2626;
 
   color: white;
@@ -190,37 +192,14 @@
   cursor: pointer;
 }
 
-.delete-node-button.active:hover {
+.delete-node-button:hover {
   background: #b91c1c;
 }
 
-.delete-node-button.active:active {
-  transform: scale(0.96);
-}
-
 /* ===========================
-   Button Focus
+   Focus
 =========================== */
 
 .header-button:focus {
   outline: none;
-}
-
-/* ===========================
-   Edit Node
-=========================== */
-.edit-node-button {
-  background: #2563eb;
-
-  color: white;
-}
-
-.edit-node-button:hover {
-  background: #1d4ed8;
-}
-
-.edit-node-button:disabled {
-  background: #bdbdbd;
-
-  color: #555;
 }

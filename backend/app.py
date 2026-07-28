@@ -17,6 +17,7 @@ from graph import (
     update_edge_weight,
     edit_node,
     update_node_position,
+    get_dataset,
 )
 
 app = FastAPI()
@@ -74,7 +75,12 @@ async def upload_csv(file: UploadFile = File(...)):
 
     print(df.head())
 
-    return {"success": True, "columns": list(df.columns), "rows": len(df)}
+    return {
+        "success": True,
+        "columns": list(df.columns),
+        "rows": len(df),
+        "data": df.astype(str).to_dict(orient="records"),
+    }
 
 
 @app.post("/create_graph")
@@ -187,3 +193,12 @@ def update_node_position_endpoint(data: dict):
     except Exception as e:
 
         return {"success": False, "message": str(e)}
+
+
+@app.get("/dataset")
+def get_dataset_endpoint():
+
+    return {
+        "success": True,
+        "dataset": get_dataset(),
+    }

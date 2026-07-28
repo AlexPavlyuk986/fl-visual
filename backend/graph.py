@@ -216,3 +216,17 @@ def update_node_position(node_id, position):
         }
 
     return G
+
+
+def get_dataset():
+
+    dataset = []
+
+    for node_id, data in G.nodes(data=True):
+
+        attributes = data.get("attributes", [])
+
+        for row in attributes:
+            dataset.append(row)
+
+    return dataset

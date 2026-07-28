@@ -6,6 +6,8 @@ interface HeaderProps {
 
   uploaded: boolean;
 
+  onReview: () => void;
+
   onAddNode: () => void;
 
   onAddEdge: () => void;
@@ -17,12 +19,16 @@ interface HeaderProps {
   editEnabled: boolean;
 
   deleteEnabled: boolean;
+
+  reviewActive: boolean;
 }
 
 function Header({
   onUpload,
 
   uploaded,
+
+  onReview,
 
   onAddNode,
 
@@ -35,6 +41,8 @@ function Header({
   onEditNode,
 
   editEnabled,
+
+  reviewActive,
 }: HeaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -73,6 +81,19 @@ function Header({
 
             <button
               type="button"
+              className={
+                uploaded
+                  ? "header-button review-button"
+                  : "header-button review-button disabled"
+              }
+              disabled={!uploaded}
+              onClick={onReview}
+            >
+              Review
+            </button>
+
+            <button
+              type="button"
               className="header-button download-button"
               disabled
             >
@@ -94,7 +115,7 @@ function Header({
             <button
               type="button"
               className="header-button add-node-button"
-              disabled={!uploaded}
+              disabled={!uploaded || reviewActive}
               onClick={onAddNode}
             >
               Add Node
@@ -103,11 +124,11 @@ function Header({
             <button
               type="button"
               className={
-                editEnabled
+                editEnabled && !reviewActive
                   ? "header-button edit-node-button active"
                   : "header-button edit-node-button"
               }
-              disabled={!editEnabled}
+              disabled={!editEnabled || reviewActive}
               onClick={onEditNode}
             >
               Edit Node
@@ -116,11 +137,11 @@ function Header({
             <button
               type="button"
               className={
-                deleteEnabled
+                deleteEnabled && !reviewActive
                   ? "header-button delete-node-button active"
                   : "header-button delete-node-button"
               }
-              disabled={!deleteEnabled}
+              disabled={!deleteEnabled || reviewActive}
               onClick={onDeleteNode}
             >
               Delete Node
@@ -141,6 +162,7 @@ function Header({
             <button
               type="button"
               className="header-button add-edge-button"
+              disabled={reviewActive}
               onClick={onAddEdge}
             >
               Add Edge

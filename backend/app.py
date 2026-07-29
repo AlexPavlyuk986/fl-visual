@@ -19,6 +19,7 @@ from graph import (
     update_node_position,
     get_dataset,
     delete_edge,
+    add_model,
 )
 
 app = FastAPI()
@@ -217,6 +218,20 @@ def delete_edge_endpoint(data: dict):
         delete_edge(source, target)
 
         return {"success": True, "edges": get_edges()}
+
+    except Exception as e:
+
+        return {"success": False, "message": str(e)}
+
+
+@app.put("/add_model")
+def add_model_endpoint(data: dict):
+
+    try:
+
+        add_model(data["node_id"], data["config"])
+
+        return {"success": True, "nodes": get_nodes()}
 
     except Exception as e:
 

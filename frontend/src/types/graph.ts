@@ -26,6 +26,14 @@ export interface NodeData {
 
     y: number;
   };
+
+  model?: {
+    type: string;
+
+    features: string[];
+
+    labels: string[];
+  };
 }
 
 export interface EdgeData {

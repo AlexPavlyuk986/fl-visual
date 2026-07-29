@@ -1,0 +1,140 @@
+/* ===========================
+   Node Popup
+=========================== */
+
+.node-popup {
+  position: absolute;
+
+  right: 20px;
+
+  top: 20px;
+
+  width: 340px;
+
+  max-height: 500px;
+
+  overflow-y: auto;
+
+  background: white;
+
+  border: 1px solid #d9d9d9;
+
+  border-radius: 8px;
+
+  padding: 16px;
+
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+
+  font-size: 13px;
+}
+
+/* ===========================
+   Sections
+=========================== */
+
+.popup-section {
+  width: 100%;
+}
+
+.popup-section + .popup-section {
+  margin-top: 16px;
+
+  padding-top: 16px;
+
+  border-top: 1px solid #d9d9d9;
+}
+
+/* ===========================
+   Titles
+=========================== */
+
+.node-popup h3 {
+  margin: 0 0 12px 0;
+
+  text-align: center;
+
+  font-size: 15px;
+
+  font-weight: 600;
+}
+
+/* ===========================
+   Data Table
+=========================== */
+
+.table-container {
+  width: 100%;
+
+  max-height: 220px;
+
+  overflow-y: auto;
+}
+
+.node-popup table {
+  width: 100%;
+
+  border-collapse: collapse;
+}
+
+.node-popup th {
+  background: #f3f3f3;
+
+  font-weight: 600;
+}
+
+.node-popup td,
+.node-popup th {
+  border: 1px solid #d8d8d8;
+
+  padding: 6px;
+
+  text-align: left;
+}
+
+/* ===========================
+   Local Model
+=========================== */
+
+.model-info {
+  display: flex;
+
+  flex-direction: column;
+
+  gap: 10px;
+}
+
+.model-row {
+  display: flex;
+
+  flex-direction: column;
+}
+
+.model-label {
+  font-weight: 600;
+
+  margin-bottom: 2px;
+}
+
+.no-model {
+  color: #777;
+
+  text-align: center;
+
+  padding: 8px 0;
+}
+
+/* ===========================
+   Scrollbars
+=========================== */
+
+.node-popup::-webkit-scrollbar,
+.table-container::-webkit-scrollbar {
+  width: 6px;
+}
+
+.node-popup::-webkit-scrollbar-thumb,
+.table-container::-webkit-scrollbar-thumb {
+  background: #c7c7c7;
+
+  border-radius: 4px;
+}

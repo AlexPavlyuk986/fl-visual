@@ -1,4 +1,5 @@
 import networkx as nx
+from sklearn.linear_model import LinearRegression
 
 G = nx.Graph()
 
@@ -105,6 +106,7 @@ def get_nodes():
                 "id": str(node_id),
                 "attributes": data.get("attributes", []),
                 "position": data.get("position", {"x": 250, "y": 250}),
+                "model": data.get("model", None),
             }
         )
 
@@ -243,5 +245,35 @@ def delete_edge(source, target):
     if G.has_edge(source, target):
 
         G.remove_edge(source, target)
+
+    return G
+
+
+def add_model(node_id, config):
+
+    global G
+    
+    print('Success')
+        
+    node_id = str(node_id)
+
+    if not G.has_node(node_id):
+        raise ValueError(f"Node '{node_id}' does not exist")
+
+    if config["type"] == "LinearRegression":
+
+        model = LinearRegression()
+
+    else:
+
+        raise ValueError("Unsupported model")
+
+    G.nodes[node_id]["model_instance"] = model
+
+    G.nodes[node_id]["model"] = {
+        "type": config["type"],
+        "features": config["features"],
+        "labels": config["labels"],
+    }
 
     return G

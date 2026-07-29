@@ -20,6 +20,10 @@ interface HeaderProps {
 
   onEdgeSettings: () => void;
 
+  onAddModel: () => void;
+
+  modelEnabled: boolean;
+
   edgeDeleteEnabled: boolean;
 
   editEnabled: boolean;
@@ -55,6 +59,10 @@ function Header({
   editEnabled,
 
   reviewActive,
+
+  onAddModel,
+
+  modelEnabled,
 }: HeaderProps) {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -188,7 +196,7 @@ function Header({
             >
               Edge Settings
             </button>
-            
+
             <button
               type="button"
               className="header-button delete-edge-button"
@@ -208,7 +216,18 @@ function Header({
       {/* Model Section */}
 
       <div className="header-section">
-        <div className="header-content">{/* Future model buttons */}</div>
+        <div className="header-content">
+          <div className="data-buttons">
+            <button
+              type="button"
+              className="header-button add-model-button"
+              disabled={!modelEnabled}
+              onClick={onAddModel}
+            >
+              Add Model
+            </button>
+          </div>
+        </div>
 
         <div className="section-title">Model</div>
       </div>

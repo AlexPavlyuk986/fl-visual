@@ -7,6 +7,7 @@ import Footer from "./components/Footer";
 import AddNodeModal from "./components/AddNodeModal";
 import AddEdgeModal from "./components/AddEdgeModal";
 import EdgeSettingsModal from "./components/EdgeSettingsModal";
+import ModelConfigurationModal from "./components/ModelConfigurationModal";
 
 import EdgePopup from "./components/EdgePopup";
 
@@ -48,6 +49,8 @@ function App() {
   const [edgeWidthByWeight, setEdgeWidthByWeight] = useState(false);
 
   const [showEdgeLabels, setShowEdgeLabels] = useState(false);
+
+  const [showModelConfiguration, setShowModelConfiguration] = useState(false);
 
   /*
             Upload CSV
@@ -370,6 +373,42 @@ function App() {
     }
   };
 
+  const applyModel = async (model: {
+    type: string;
+    features: string[];
+    labels: string[];
+  }): Promise<boolean> => {
+    if (!selectedNode) {
+      return false;
+    }
+
+    try {
+      const response = await api.put("/add_model", {
+        node_id: selectedNode.id,
+
+        config: model,
+      });
+
+      if (!response.data.success) {
+        return false;
+      }
+
+      setNodes(response.data.nodes);
+
+      const updatedNode = response.data.nodes.find(
+        (node: NodeData) => node.id === selectedNode.id,
+      );
+
+      setSelectedNode(updatedNode ?? null);
+
+      return true;
+    } catch (error) {
+      console.error(error);
+
+      return false;
+    }
+  };
+
   return (
     <div className="app-container">
       <Header
@@ -386,6 +425,8 @@ function App() {
         deleteEnabled={selectedNode !== null}
         editEnabled={selectedNode !== null}
         reviewActive={showReview}
+        onAddModel={() => setShowModelConfiguration(true)}
+        modelEnabled={selectedNode !== null}
       />
 
       <GraphArea
@@ -451,6 +492,13 @@ function App() {
           showEdgeLabels={showEdgeLabels}
           setShowEdgeLabels={setShowEdgeLabels}
           onClose={() => setShowEdgeSettings(false)}
+        />
+      )}
+      {showModelConfiguration && selectedNode && (
+        <ModelConfigurationModal
+          node={selectedNode}
+          onApply={applyModel}
+          onClose={() => setShowModelConfiguration(false)}
         />
       )}
     </div>

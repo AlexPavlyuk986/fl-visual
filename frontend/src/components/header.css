@@ -155,7 +155,8 @@
 .add-node-button,
 .add-edge-button,
 .edit-node-button,
-.edge-settings-button {
+.edge-settings-button,
+.add-model-button {
   background: #2563eb;
 
   color: white;

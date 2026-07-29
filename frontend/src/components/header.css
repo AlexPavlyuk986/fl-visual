@@ -120,7 +120,6 @@
     transform 0.05s ease;
 }
 
-
 /* ===========================
    Enabled Button Behavior
 =========================== */
@@ -132,7 +131,6 @@
 .header-button:not(:disabled):active {
   transform: scale(0.96);
 }
-
 
 /* ===========================
    Disabled Button
@@ -148,7 +146,6 @@
   transform: none;
 }
 
-
 /* ===========================
    Blue Buttons
 =========================== */
@@ -157,12 +154,12 @@
 .review-button,
 .add-node-button,
 .add-edge-button,
-.edit-node-button {
+.edit-node-button,
+.edge-settings-button {
   background: #2563eb;
 
   color: white;
 }
-
 
 /* ===========================
    Red Buttons
@@ -175,7 +172,6 @@
   color: white;
 }
 
-
 /* ===========================
    Download Button
 =========================== */
@@ -187,7 +183,6 @@
 
   cursor: not-allowed;
 }
-
 
 /* ===========================
    Focus

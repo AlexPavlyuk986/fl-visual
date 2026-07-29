@@ -6,6 +6,7 @@ import Footer from "./components/Footer";
 
 import AddNodeModal from "./components/AddNodeModal";
 import AddEdgeModal from "./components/AddEdgeModal";
+import EdgeSettingsModal from "./components/EdgeSettingsModal";
 
 import EdgePopup from "./components/EdgePopup";
 
@@ -41,6 +42,12 @@ function App() {
   const [dataset, setDataset] = useState<Record<string, string>[]>([]);
 
   const [showReview, setShowReview] = useState(false);
+
+  const [showEdgeSettings, setShowEdgeSettings] = useState(false);
+
+  const [edgeWidthByWeight, setEdgeWidthByWeight] = useState(false);
+
+  const [showEdgeLabels, setShowEdgeLabels] = useState(false);
 
   /*
             Upload CSV
@@ -372,6 +379,7 @@ function App() {
         onAddNode={() => setShowAddNode(true)}
         onAddEdge={() => setShowAddEdge(true)}
         onEditNode={() => setShowEditNode(true)}
+        onEdgeSettings={() => setShowEdgeSettings(true)}
         onDeleteEdge={deleteEdge}
         onDeleteNode={deleteNode}
         edgeDeleteEnabled={selectedEdge !== null}
@@ -401,6 +409,8 @@ function App() {
         selectedEdge={selectedEdge}
         setSelectedEdge={setSelectedEdge}
         updateEdgeWeight={updateEdgeWeight}
+        edgeWidthByWeight={edgeWidthByWeight}
+        showEdgeLabels={showEdgeLabels}
       />
 
       <Footer />
@@ -431,6 +441,16 @@ function App() {
           originalIdentifier={selectedNode.id}
           onSubmit={editNode}
           onClose={() => setShowEditNode(false)}
+        />
+      )}
+
+      {showEdgeSettings && (
+        <EdgeSettingsModal
+          edgeWidthByWeight={edgeWidthByWeight}
+          setEdgeWidthByWeight={setEdgeWidthByWeight}
+          showEdgeLabels={showEdgeLabels}
+          setShowEdgeLabels={setShowEdgeLabels}
+          onClose={() => setShowEdgeSettings(false)}
         />
       )}
     </div>

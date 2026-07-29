@@ -35,6 +35,10 @@ interface GraphAreaProps {
 
   setSelectedLayout: React.Dispatch<React.SetStateAction<string>>;
 
+  edgeWidthByWeight: boolean;
+
+  showEdgeLabels: boolean;
+
   onNext: () => void;
 
   onApply: () => void;
@@ -109,6 +113,10 @@ function GraphArea({
   setSelectedEdge,
 
   updateEdgeWeight,
+
+  edgeWidthByWeight,
+
+  showEdgeLabels,
 }: GraphAreaProps) {
   const elements = useMemo(() => {
     const nodeElements = nodes.map((node) => ({
@@ -135,6 +143,19 @@ function GraphArea({
 
     return [...nodeElements, ...edgeElements];
   }, [nodes, edges]);
+
+  // ----------------------------
+  // Edge weight range
+  // ----------------------------
+
+  const weights = edges.map((e) => e.weight);
+
+  const minWeight = weights.length > 0 ? Math.min(...weights) : 1;
+
+  const maxWeight = weights.length > 0 ? Math.max(...weights) : 10;
+
+  // Prevent division-by-zero when all weights are equal
+  const weightMax = minWeight === maxWeight ? minWeight + 1 : maxWeight;
 
   const stylesheet = [
     {
@@ -171,11 +192,31 @@ function GraphArea({
       selector: "edge",
 
       style: {
-        width: 3,
+        width: edgeWidthByWeight
+          ? `mapData(weight, ${minWeight}, ${weightMax}, 2, 10)`
+          : 3,
 
         lineColor: "#999",
 
+        label: showEdgeLabels ? "data(weight)" : "",
+
         textRotation: "autorotate",
+
+        textMarginY: -2,
+
+        fontSize: 12,
+
+        color: "#333",
+
+        textBackgroundOpacity: 1,
+
+        textBackgroundColor: "#ffffff",
+
+        textBackgroundPadding: 2,
+
+        textBorderOpacity: 0,
+
+        textOutlineOpacity: 0,
       },
     },
 
